@@ -21,8 +21,14 @@ export const env = createEnv({
       process.env.VERCEL ? z.string().min(1) : z.string().url(),
     ),
     // Add `.min(1) on ID and SECRET if you want to make sure they're not empty
-    DISCORD_CLIENT_ID: z.string(),
-    DISCORD_CLIENT_SECRET: z.string(),
+    CLIENT_ID: z.string(),
+    CLIENT_SECRET: z.string(),
+    APP_ID: z.string(),
+    APP_SECRET: z.string(),
+    ACCESS_KEY: z.string(),
+    SECRET_KEY: z.string(),
+    BUCKET_NAME: z.string(),
+    REGION: z.string(),
   },
 
   /**
@@ -43,7 +49,13 @@ export const env = createEnv({
     NODE_ENV: process.env.NODE_ENV,
     NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
     NEXTAUTH_URL: process.env.NEXTAUTH_URL,
-    DISCORD_CLIENT_ID: process.env.DISCORD_CLIENT_ID,
-    DISCORD_CLIENT_SECRET: process.env.DISCORD_CLIENT_SECRET,
+    CLIENT_ID: process.env.CLIENT_ID,
+    CLIENT_SECRET: process.env.CLIENT_SECRET,
+    APP_ID: process.env.APP_ID,
+    APP_SECRET: process.env.APP_SECRET,
+    ACCESS_KEY: process.env.ACCESS_KEY,
+    SECRET_KEY: process.env.SECRET_KEY,
+    BUCKET_NAME: process.env.BUCKET_NAME,
+    REGION: process.env.REGION
   },
 });
