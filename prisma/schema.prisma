@@ -6,19 +6,10 @@ generator client {
 }
 
 datasource db {
-    provider = "sqlite"
-    // NOTE: When using mysql or sqlserver, uncomment the @db.Text annotations in model Account below
-    // Further reading:
-    // https://next-auth.js.org/adapters/prisma#create-the-prisma-schema
-    // https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#string
+    provider = "postgresql"
     url      = env("DATABASE_URL")
 }
 
-model Example {
-    id        String   @id @default(cuid())
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-}
 
 // Necessary for Next auth
 model Account {
@@ -48,13 +39,109 @@ model Session {
 }
 
 model User {
-    id            String    @id @default(cuid())
+    id            String     @id @default(cuid())
     name          String?
-    email         String?   @unique
+    email         String?    @unique
     emailVerified DateTime?
     image         String?
-    accounts      Account[]
-    sessions      Session[]
+    phoneNumber   String?
+    currentPet    CurrentPet @default(NONE)
+
+    role Role @default(USER)
+
+    accounts Account[]
+    sessions Session[]
+
+    Image      Image[]
+    Pet        Pet[]
+    Preference Preference[]
+    Favorite   Favorite[]
+    Adoption   Adoption[]
+}
+
+enum CurrentPet {
+    NONE
+    CAT
+    DOG
+    BIRD
+}
+
+enum Role {
+    USER
+    ADMIN
+    DONOR
+}
+
+model Preference {
+    id       String  @id @default(cuid())
+    user     User    @relation(fields: [userId], references: [id])
+    userId   String
+    breed    String?
+    ageRange String
+    gender   String
+    type     String
+    children Boolean
+    garden   Boolean
+    active   Boolean
+}
+
+model Favorite {
+    id     String @id @default(cuid())
+    user   User   @relation(fields: [userId], references: [id])
+    userId String
+    pet    Pet    @relation(fields: [petId], references: [id])
+    petId  String
+}
+
+model Adoption {
+    id     String @id @default(cuid())
+    user   User   @relation(fields: [userId], references: [id])
+    userId String
+    pet    Pet    @relation(fields: [petId], references: [id])
+    petId  String
+}
+
+model Pet {
+    id            String  @id @default(cuid())
+    name          String
+    description   String
+    Image         Image[]
+    breed         String?
+    ageRange      String
+    gender        String
+    type          String
+    children      Boolean
+    garden        Boolean
+    active        Boolean
+    adopted       Boolean @default(false)
+    neutered      Boolean
+    deleted       Boolean @default(false)
+    petTorrelance String
+
+    donor        User           @relation(fields: [userId], references: [id])
+    userId       String
+    Vaccinations Vaccinations[]
+    Favorite     Favorite[]
+    Adoption     Adoption[]
+}
+
+model Vaccinations {
+    id          String   @id @default(cuid())
+    rabies      Boolean
+    others      String?
+    nextVaxDate DateTime
+    pet         Pet      @relation(fields: [petId], references: [id])
+
+    petId String
+}
+
+model Image {
+    id      String  @id @default(cuid())
+    petId   String
+    userId  String
+    deleted Boolean @default(false)
+    Pet     Pet     @relation(fields: [petId], references: [id])
+    user    User    @relation(fields: [userId], references: [id])
 }
 
 model VerificationToken {
