@@ -1,3 +1,4 @@
+import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
 import {
@@ -110,11 +111,14 @@ export const userRouter = createTRPCRouter({
   getProfile: protectedProcedure.query(async ({ ctx }) => {
     const id = ctx.session.user.id;
 
-    return await ctx.prisma.user.findUniqueOrThrow({
+    const user=await ctx.prisma.user.findUniqueOrThrow({
       where: {
         id,
       },
     });
+    if (!user) {
+      throw new TRPCError({code: "NOT_FOUND"})
+    } return user
   }),
   addToFavourites: protectedProcedure.input(z.object({id:z.string()})).mutation(async ({ ctx, input }) => {
     const userId = ctx.session.user.id;
@@ -138,13 +142,19 @@ id:input.id
   getUser: protectedProcedure
     .input(z.object({ userId: z.string() }))
     .query(async ({ ctx, input }) => {
-      return await ctx.prisma.user.findUniqueOrThrow({
+      const user= await ctx.prisma.user.findUniqueOrThrow({
         where: {
           id: input.userId,
         },
       });
+      if (!user) {
+        throw new TRPCError({code: "NOT_FOUND"})
+      } return user
     }),
-  getAll: protectedAdminProcedure.query(({ ctx }) => {
-    return ctx.prisma.user.findMany();
+  getAll: protectedAdminProcedure.query(async({ ctx }) => {
+     const users=await ctx.prisma.user.findMany();
+     if (!users) {
+      throw new TRPCError({code: "NOT_FOUND"})
+    } return users
   }),
 });

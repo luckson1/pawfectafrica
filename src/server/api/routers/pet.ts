@@ -4,6 +4,7 @@ import {
   protectedAdminProcedure,
   protectedProcedure,
 } from "../trpc";
+import { TRPCError } from "@trpc/server";
 
 export const petRouter = createTRPCRouter({
   createPetProfile: protectedProcedure
@@ -54,81 +55,110 @@ export const petRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const userId = ctx.session.user.id;
 
-      const pet = await ctx.prisma.pet.update({
+      const pet = await ctx.prisma.pet.findUniqueOrThrow({
         where: {
           id: input.id,
         },
-        data: {
-          userId,
-          ...input,
-        },
       });
-      return pet;
+      if (pet.userId === userId) {
+        return await ctx.prisma.pet.update({
+          where: {
+            id: input.id,
+          },
+          data: {
+            userId,
+            ...input,
+          },
+        });
+      }
+      throw new TRPCError({ code: "FORBIDDEN" });
     }),
 
   getAllPets: protectedAdminProcedure.query(async ({ ctx }) => {
-    return await ctx.prisma.pet.findMany({
+    const pets = await ctx.prisma.pet.findMany({
       where: {
         deleted: false,
       },
     });
+    if (!pets) {
+      throw new TRPCError({ code: "NOT_FOUND" });
+    }
+    return pets;
   }),
   getOnePet: protectedProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {
-      return await ctx.prisma.pet.findFirstOrThrow({
+      const pet = await ctx.prisma.pet.findFirstOrThrow({
         where: {
           id: input.id,
           deleted: false,
         },
       });
+      if (!pet) {
+        throw new TRPCError({ code: "NOT_FOUND" });
+      }
+      return pet;
     }),
   getPetsByType: protectedProcedure
     .input(z.object({ type: z.string() }))
     .query(async ({ ctx, input }) => {
-      return await ctx.prisma.pet.findMany({
+      const pets = await ctx.prisma.pet.findMany({
         where: {
           type: input.type,
           deleted: false,
           adopted: false,
         },
       });
+      if (!pets) {
+        throw new TRPCError({ code: "NOT_FOUND" });
+      }
+      return pets;
     }),
   getDonorsPetsbyId: protectedProcedure
     .input(z.object({ userId: z.string() }))
     .query(async ({ ctx, input }) => {
-      return await ctx.prisma.pet.findMany({
+      const pets = await ctx.prisma.pet.findMany({
         where: {
           userId: input.userId,
           deleted: false,
         },
       });
+      if (!pets) {
+        throw new TRPCError({ code: "NOT_FOUND" });
+      }
+      return pets;
     }),
   getDonatedPets: protectedProcedure.query(async ({ ctx }) => {
     const userId = ctx.session.user.id;
-    return await ctx.prisma.pet.findMany({
+    const pets = await ctx.prisma.pet.findMany({
       where: {
         userId,
         deleted: false,
         adopted: false,
       },
     });
-  }),
-  getDonorAdoptedPets: protectedProcedure.query(
-    async ({ ctx}) => {
-      const userId = ctx.session.user.id;
-      return await ctx.prisma.pet.findMany({
-        where: {
-          userId,
-          deleted: false,
-          adopted: true,
-        },
-      });
+    if (!pets) {
+      throw new TRPCError({ code: "NOT_FOUND" });
     }
-  ),
+    return pets;
+  }),
+  getDonorAdoptedPets: protectedProcedure.query(async ({ ctx }) => {
+    const userId = ctx.session.user.id;
+    const pets = await ctx.prisma.pet.findMany({
+      where: {
+        userId,
+        deleted: false,
+        adopted: true,
+      },
+    });
+    if (!pets) {
+      throw new TRPCError({ code: "NOT_FOUND" });
+    }
+    return pets;
+  }),
   getUserFavouritePets: protectedProcedure.query(async ({ ctx }) => {
     const userId = ctx.session.user.id;
-    return await ctx.prisma.pet.findMany({
+    const pets = await ctx.prisma.pet.findMany({
       where: {
         userId,
         deleted: false,
@@ -140,10 +170,14 @@ export const petRouter = createTRPCRouter({
         },
       },
     });
+    if (!pets) {
+      throw new TRPCError({ code: "NOT_FOUND" });
+    }
+    return pets;
   }),
-  getUserAdoptedPets: protectedProcedure.query(async ({ ctx}) => {
+  getUserAdoptedPets: protectedProcedure.query(async ({ ctx }) => {
     const userId = ctx.session.user.id;
-    return await ctx.prisma.pet.findMany({
+    const pets = await ctx.prisma.pet.findMany({
       where: {
         userId,
         deleted: false,
@@ -155,6 +189,10 @@ export const petRouter = createTRPCRouter({
         },
       },
     });
+    if (!pets) {
+      throw new TRPCError({ code: "NOT_FOUND" });
+    }
+    return pets;
   }),
   addAdoption: protectedProcedure
     .input(z.object({ id: z.string() }))
@@ -180,13 +218,23 @@ export const petRouter = createTRPCRouter({
   deletePet: protectedProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {
-      return await ctx.prisma.pet.update({
+      const userId = ctx.session.user.id;
+      const pet = await ctx.prisma.pet.findFirstOrThrow({
         where: {
           id: input.id,
         },
-        data: {
-          deleted: true,
-        },
       });
+
+      if (pet.userId === userId) {
+        return await ctx.prisma.pet.update({
+          where: {
+            id: input.id,
+          },
+          data: {
+            deleted: true,
+          },
+        });
+      }
+      throw new TRPCError({ code: "FORBIDDEN" });
     }),
 });
