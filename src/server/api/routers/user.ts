@@ -12,6 +12,11 @@ enum CurrentPet {
   DOG = "DOG",
   BIRD = "BIRD",
 }
+enum Type {
+  DOG="DOG",
+  CAT="CAT",
+  BIRD="BIRD"
+}
 export const userRouter = createTRPCRouter({
   onboarding: protectedProcedure
     .input(
@@ -20,7 +25,7 @@ export const userRouter = createTRPCRouter({
         breed: z.string(),
         ageRange: z.string(),
         gender: z.string(),
-        type: z.string(),
+        type: z.nativeEnum(Type),
         children: z.boolean(),
         garden: z.boolean(),
         active: z.boolean(),
@@ -72,7 +77,7 @@ export const userRouter = createTRPCRouter({
         breed: z.string(),
         ageRange: z.string(),
         gender: z.string(),
-        type: z.string(),
+        type: z.nativeEnum(Type),
         children: z.boolean(),
         garden: z.boolean(),
         active: z.boolean(),

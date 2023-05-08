@@ -79,7 +79,7 @@ model Preference {
     breed    String?
     ageRange String
     gender   String
-    type     String
+    type     Type
     children Boolean
     garden   Boolean
     active   Boolean
@@ -109,7 +109,7 @@ model Pet {
     breed         String?
     ageRange      String
     gender        String
-    type          String
+    type          Type
     children      Boolean
     garden        Boolean
     active        Boolean
@@ -120,12 +120,16 @@ model Pet {
 
     donor        User           @relation(fields: [userId], references: [id])
     userId       String
-    Vaccinations Vaccinations[]
+    Vaccinations Vaccination[]
     Favorite     Favorite[]
     Adoption     Adoption[]
 }
-
-model Vaccinations {
+enum Type {
+    DOG
+    CAT
+    BIRD
+}
+model Vaccination {
     id          String   @id @default(cuid())
     rabies      Boolean
     others      String?
