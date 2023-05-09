@@ -11,31 +11,41 @@ enum CurrentPet {
   CAT = "CAT",
   DOG = "DOG",
   BIRD = "BIRD",
+  ALL = "ALL",
 }
 enum Type {
-  DOG="DOG",
-  CAT="CAT",
-  BIRD="BIRD"
+  DOG = "DOG",
+  CAT = "CAT",
+  BIRD = "BIRD",
+}
+enum Gender {
+  MALE = "MALE",
+  FEMALE = "FEMALE",
+  NA = "NA",
+}
+enum Age {
+  BELOW_ONE = "BELOW_ONE",
+  ONE_TO_TWO = "ONE_TO_TWO",
+  TWO_TO_FIVE = "TWO_TO_FIVE",
+  OVER_FIVE = "OVER_FIVE",
 }
 export const userRouter = createTRPCRouter({
   onboarding: protectedProcedure
     .input(
       z.object({
-        phoneNumber: z.string().regex(/^(?:\+254|0)[1-9]\d{8}$/),
         breed: z.string(),
-        ageRange: z.string(),
-        gender: z.string(),
+        ageRange: z.nativeEnum(Age),
+        gender: z.nativeEnum(Gender).optional(),
         type: z.nativeEnum(Type),
-        children: z.boolean(),
-        garden: z.boolean(),
-        active: z.boolean(),
+        children: z.enum(["true", "false"]),
         currentPet: z.nativeEnum(CurrentPet),
+        garden: z.enum(["true", "false"]),
+        active: z.enum(["true", "false"]),
       })
     )
     .mutation(async ({ input, ctx }) => {
       const id = ctx.session.user.id;
       const {
-        phoneNumber,
         breed,
         ageRange,
         gender,
@@ -46,15 +56,6 @@ export const userRouter = createTRPCRouter({
         currentPet,
       } = input;
 
-      const updatedUser = await ctx.prisma.user.update({
-        where: {
-          id,
-        },
-        data: {
-          phoneNumber,
-          currentPet,
-        },
-      });
       const preferences = await ctx.prisma.preference.create({
         data: {
           userId: id,
@@ -62,41 +63,31 @@ export const userRouter = createTRPCRouter({
           ageRange,
           gender,
           type,
-          children,
-          garden,
-          active,
+          currentPet,
+          hasChildren: children === "true",
+          hasGarden: garden === "true",
+          isActive: active === "true",
         },
       });
 
-      return { updatedUser, preferences };
+      return preferences;
     }),
 
-    updatePreferences: protectedProcedure
+  updatePreferences: protectedProcedure
     .input(
       z.object({
         breed: z.string(),
-        ageRange: z.string(),
-        gender: z.string(),
+        ageRange: z.nativeEnum(Age),
+        gender: z.nativeEnum(Gender).optional(),
         type: z.nativeEnum(Type),
-        children: z.boolean(),
-        garden: z.boolean(),
-        active: z.boolean(),
+        children: z.enum(["true", "false"]),
+        garden: z.enum(["true", "false"]),
+        active: z.enum(["true", "false"]),
       })
     )
     .mutation(async ({ input, ctx }) => {
       const id = ctx.session.user.id;
-      const {
-   
-        breed,
-        ageRange,
-        gender,
-        type,
-        children,
-        garden,
-        active,
-       
-      } = input;
-
+      const { breed, ageRange, gender, type, children, garden, active } = input;
 
       const preferences = await ctx.prisma.preference.create({
         data: {
@@ -105,9 +96,9 @@ export const userRouter = createTRPCRouter({
           ageRange,
           gender,
           type,
-          children,
-          garden,
-          active,
+          hasChildren: children === "true",
+          hasGarden: garden === "true",
+          isActive: active === "true",
         },
       });
 
@@ -116,50 +107,55 @@ export const userRouter = createTRPCRouter({
   getProfile: protectedProcedure.query(async ({ ctx }) => {
     const id = ctx.session.user.id;
 
-    const user=await ctx.prisma.user.findUniqueOrThrow({
+    const user = await ctx.prisma.user.findUniqueOrThrow({
       where: {
         id,
       },
     });
     if (!user) {
-      throw new TRPCError({code: "NOT_FOUND"})
-    } return user
+      throw new TRPCError({ code: "NOT_FOUND" });
+    }
+    return user;
   }),
-  addToFavourites: protectedProcedure.input(z.object({id:z.string()})).mutation(async ({ ctx, input }) => {
-    const userId = ctx.session.user.id;
+  addToFavourites: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const userId = ctx.session.user.id;
 
-    return await ctx.prisma.favorite.create({
-      data: {
-       petId: input.id,
-       userId
-      },
-    });
-  }),
-  removeFromFavourites:protectedProcedure.input(z.object({id:z.string()})).mutation(async ({ ctx, input }) => {
-   
-
-    return await ctx.prisma.favorite.delete({
-     where: {
-id:input.id
-     }
-    });
-  }),
+      return await ctx.prisma.favorite.create({
+        data: {
+          petId: input.id,
+          userId,
+        },
+      });
+    }),
+  removeFromFavourites: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      return await ctx.prisma.favorite.delete({
+        where: {
+          id: input.id,
+        },
+      });
+    }),
   getUser: protectedProcedure
     .input(z.object({ userId: z.string() }))
     .query(async ({ ctx, input }) => {
-      const user= await ctx.prisma.user.findUniqueOrThrow({
+      const user = await ctx.prisma.user.findUniqueOrThrow({
         where: {
           id: input.userId,
         },
       });
       if (!user) {
-        throw new TRPCError({code: "NOT_FOUND"})
-      } return user
+        throw new TRPCError({ code: "NOT_FOUND" });
+      }
+      return user;
     }),
-  getAll: protectedAdminProcedure.query(async({ ctx }) => {
-     const users=await ctx.prisma.user.findMany();
-     if (!users) {
-      throw new TRPCError({code: "NOT_FOUND"})
-    } return users
+  getAll: protectedAdminProcedure.query(async ({ ctx }) => {
+    const users = await ctx.prisma.user.findMany();
+    if (!users) {
+      throw new TRPCError({ code: "NOT_FOUND" });
+    }
+    return users;
   }),
 });
