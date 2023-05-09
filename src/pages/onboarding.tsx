@@ -92,6 +92,7 @@ const Onboarding = () => {
         <p className="mt-4 text-center text-2xl tracking-wider">Welcome, Let us discover the most suitable pet for You</p>
         <form
           className="flex h-fit w-full flex-row flex-wrap justify-around rounded-md px-5 py-10 md:px-10 md:py-16"
+            // eslint-disable-next-line @typescript-eslint/no-misused-promises
             onSubmit={onSubmit}
         >
           <div className="form-control w-full max-w-xs mt-5">
