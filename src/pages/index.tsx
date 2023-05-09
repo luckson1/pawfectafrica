@@ -6,7 +6,7 @@ import { api } from "~/utils/api";
 import { useState } from "react";
 import { Nav } from "~/components/Nav";
 import { useRouter } from "next/navigation";
-import LoadingSkeleton from "~/components/LoadingSkeletons";
+import LoadingSkeleton from "~/components/loading/LoadingSkeletons";
 import { Toaster, toast } from "react-hot-toast";
 
 
