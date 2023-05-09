@@ -18,7 +18,8 @@ import { prisma } from "~/server/db";
 enum Role  {
 USER="USER",
 ADMIN="ADMIN",
-DONOR="DONOR"
+DONOR="DONOR",
+ADOPTER="ADOPTER"
 
 }
 
