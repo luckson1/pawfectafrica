@@ -54,7 +54,7 @@ model User {
     Preference Preference[]
     Favorite   Favorite[]
     Adoption   Adoption[]
-    Donor      Donor[]
+    Donation      Donation[]
 }
 
 enum CurrentPet {
@@ -84,18 +84,19 @@ enum Age {
     TWO_TO_FIVE
     OVER_FIVE
 }
+
 model Preference {
-    id         String     @id @default(cuid())
-    user       User       @relation(fields: [userId], references: [id])
-    userId     String
-    breed      String?
-    ageRange   Age
-    gender     Gender?
-    type       Type
-    hasChildren   Boolean
-    hasGarden     Boolean
-    isActive     Boolean
-    currentPet CurrentPet @default(NONE)
+    id          String     @id @default(cuid())
+    user        User       @relation(fields: [userId], references: [id])
+    userId      String
+    breed       String?
+    ageRange    Age
+    gender      Gender?
+    type        Type
+    hasChildren Boolean
+    hasGarden   Boolean
+    isActive    Boolean
+    currentPet  CurrentPet @default(NONE)
 }
 
 model Donation {
@@ -123,21 +124,21 @@ model Adoption {
 }
 
 model Pet {
-    id            String  @id @default(cuid())
-    name          String
-    description   String
-    Image         Image[]
-    breed         String?
-    ageRange      Age
-    gender        Gender
-    type          Type
-    isChildrenSafe      Boolean
-    isNeedGarden        Boolean
-    isActive        Boolean
-    isAdopted       Boolean @default(false)
-    isNeutered      Boolean
-    deleted       Boolean @default(false)
-    petTorrelance CurrentPet
+    id             String     @id @default(cuid())
+    name           String
+    description    String
+    Image          Image[]
+    breed          String?
+    ageRange       Age
+    gender         Gender
+    type           Type
+    isChildrenSafe Boolean
+    isNeedGarden   Boolean
+    isActive       Boolean
+    isAdopted      Boolean    @default(false)
+    isNeutered     Boolean
+    deleted        Boolean    @default(false)
+    petTorrelance  CurrentPet
 
     donor        User          @relation(fields: [userId], references: [id])
     userId       String
