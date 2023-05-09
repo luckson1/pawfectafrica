@@ -18,9 +18,28 @@ const s3 = new S3({
 });
 
 enum Type {
-  DOG="DOG",
-  CAT="CAT",
-  BIRD="BIRD"
+  DOG = "DOG",
+  CAT = "CAT",
+  BIRD = "BIRD",
+}
+enum Gender {
+  MALE = "MALE",
+  FEMALE = "FEMALE",
+  NA = "NA",
+}
+
+enum Age {
+  BELOW_ONE = "BELOW_ONE",
+  ONE_TO_TWO = "ONE_TO_TWO",
+  TWO_TO_FIVE = "TWO_TO_FIVE",
+  OVER_FIVE = "OVER_FIVE",
+}
+enum CurrentPet {
+  NONE = "NONE",
+  CAT = "CAT",
+  DOG = "DOG",
+  BIRD = "BIRD",
+  ALL = "ALL",
 }
 export const petRouter = createTRPCRouter({
   createPetProfile: protectedProcedure
@@ -28,24 +47,46 @@ export const petRouter = createTRPCRouter({
       z.object({
         name: z.string(),
         breed: z.string(),
-        ageRange: z.string(),
-        gender: z.string(),
+        ageRange: z.nativeEnum(Age),
+        gender: z.nativeEnum(Gender),
         type: z.nativeEnum(Type),
-        children: z.boolean(),
-        garden: z.boolean(),
-        active: z.boolean(),
+        children: z.enum(["true", "false"]),
+        garden: z.enum(["true", "false"]),
+        active: z.enum(["true", "false"]),
         description: z.string(),
-        petTorrelance: z.string(),
-        neutered: z.boolean(),
+        petTorrelance: z.nativeEnum(CurrentPet),
+        neutered: z.enum(["true", "false"]),
       })
     )
     .mutation(async ({ ctx, input }) => {
       const userId = ctx.session.user.id;
-
+      const {
+        name,
+        breed,
+        ageRange,
+        gender,
+        type,
+        children,
+        garden,
+        active,
+        description,
+        petTorrelance,
+        neutered,
+      } = input;
       const pet = await ctx.prisma.pet.create({
         data: {
           userId,
-          ...input,
+          name,
+          breed,
+          ageRange,
+          gender,
+          type,
+          isChildrenSafe: children === "true",
+          isNeedGarden: garden === "true",
+          isActive: active === "true",
+          description,
+          petTorrelance,
+          isNeutered: neutered === "true",
         },
       });
       return pet;
@@ -56,21 +97,33 @@ export const petRouter = createTRPCRouter({
       z.object({
         name: z.string(),
         breed: z.string(),
-        ageRange: z.string(),
-        gender: z.string(),
+        ageRange: z.nativeEnum(Age),
+        gender: z.nativeEnum(Gender),
         type: z.nativeEnum(Type),
-        children: z.boolean(),
-        garden: z.boolean(),
-        active: z.boolean(),
+        children: z.enum(["true", "false"]),
+        garden: z.enum(["true", "false"]),
+        active: z.enum(["true", "false"]),
         description: z.string(),
-        petTorrelance: z.string(),
+        petTorrelance: z.nativeEnum(CurrentPet),
         id: z.string(),
-        neutered: z.boolean(),
+        neutered: z.enum(["true", "false"]),
       })
     )
     .mutation(async ({ ctx, input }) => {
       const userId = ctx.session.user.id;
-
+      const {
+        name,
+        breed,
+        ageRange,
+        gender,
+        type,
+        children,
+        garden,
+        active,
+        description,
+        petTorrelance,
+        neutered,
+      } = input;
       const pet = await ctx.prisma.pet.findUniqueOrThrow({
         where: {
           id: input.id,
@@ -83,7 +136,17 @@ export const petRouter = createTRPCRouter({
           },
           data: {
             userId,
-            ...input,
+            name,
+            breed,
+            ageRange,
+            gender,
+            type,
+            isChildrenSafe: children === "true",
+            isNeedGarden: garden === "true",
+            isActive: active === "true",
+            description,
+            petTorrelance,
+            isNeutered: neutered === "true",
           },
         });
       }
@@ -180,18 +243,18 @@ export const petRouter = createTRPCRouter({
         include: {
           Image: {
             select: {
-              id: true
-            }
-          }
-        }
+              id: true,
+            },
+          },
+        },
       });
       if (!pet) {
         throw new TRPCError({ code: "NOT_FOUND" });
       }
-// attach images url from S3 storage to pet object
+      // attach images url from S3 storage to pet object
       const petWithImageUrls = {
         ...pet,
-        Image: pet.Image.map(async(image) => ({
+        Image: pet.Image.map(async (image) => ({
           ...image,
           url: await s3.getSignedUrlPromise("getObject", {
             Bucket: env.BUCKET_NAME,
@@ -199,7 +262,7 @@ export const petRouter = createTRPCRouter({
           }),
         })),
       };
-     return petWithImageUrls
+      return petWithImageUrls;
     }),
   getPetsByType: protectedProcedure
     .input(z.object({ type: z.nativeEnum(Type) }))
@@ -208,55 +271,15 @@ export const petRouter = createTRPCRouter({
         where: {
           type: input.type,
           deleted: false,
-          adopted: false,
+          isAdopted: false,
         },
         include: {
           Image: {
             select: {
-              id: true
-            }
-          }
-        }
-      });
-      if (!pets) {
-        throw new TRPCError({ code: "NOT_FOUND" });
-      }
-        // attach image urls from s3 to the pet object
-    const petsWithImageUrls = await Promise.all(
-      pets.map(async (pet) => {
-        const petWithImageUrl = {
-          ...pet,
-          Image: await Promise.all(
-            pet.Image.map(async (image) => ({
-              ...image,
-              url: await s3.getSignedUrlPromise("getObject", {
-                Bucket: env.BUCKET_NAME,
-                Key: `${image.id}`,
-              }),
-            }))
-          ),
-        };
-
-        return petWithImageUrl;
-      })
-    );
-    return petsWithImageUrls;
-    }),
-  getDonorsPetsbyId: protectedProcedure
-    .input(z.object({ userId: z.string() }))
-    .query(async ({ ctx, input }) => {
-      const pets = await ctx.prisma.pet.findMany({
-        where: {
-          userId: input.userId,
-          deleted: false,
+              id: true,
+            },
+          },
         },
-        include: {
-          Image: {
-            select: {
-              id: true
-            }
-          }
-        }
       });
       if (!pets) {
         throw new TRPCError({ code: "NOT_FOUND" });
@@ -276,7 +299,47 @@ export const petRouter = createTRPCRouter({
               }))
             ),
           };
-  
+
+          return petWithImageUrl;
+        })
+      );
+      return petsWithImageUrls;
+    }),
+  getDonorsPetsbyId: protectedProcedure
+    .input(z.object({ userId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const pets = await ctx.prisma.pet.findMany({
+        where: {
+          userId: input.userId,
+          deleted: false,
+        },
+        include: {
+          Image: {
+            select: {
+              id: true,
+            },
+          },
+        },
+      });
+      if (!pets) {
+        throw new TRPCError({ code: "NOT_FOUND" });
+      }
+      // attach image urls from s3 to the pet object
+      const petsWithImageUrls = await Promise.all(
+        pets.map(async (pet) => {
+          const petWithImageUrl = {
+            ...pet,
+            Image: await Promise.all(
+              pet.Image.map(async (image) => ({
+                ...image,
+                url: await s3.getSignedUrlPromise("getObject", {
+                  Bucket: env.BUCKET_NAME,
+                  Key: `${image.id}`,
+                }),
+              }))
+            ),
+          };
+
           return petWithImageUrl;
         })
       );
@@ -288,15 +351,15 @@ export const petRouter = createTRPCRouter({
       where: {
         userId,
         deleted: false,
-        adopted: false,
+        isAdopted: false,
       },
       include: {
         Image: {
           select: {
-            id: true
-          }
-        }
-      }
+            id: true,
+          },
+        },
+      },
     });
     if (!pets) {
       throw new TRPCError({ code: "NOT_FOUND" });
@@ -328,39 +391,39 @@ export const petRouter = createTRPCRouter({
       where: {
         userId,
         deleted: false,
-        adopted: true,
+        isAdopted: true,
       },
       include: {
         Image: {
           select: {
-            id: true
-          }
-        }
-      }
+            id: true,
+          },
+        },
+      },
     });
     if (!pets) {
       throw new TRPCError({ code: "NOT_FOUND" });
     }
-  // attach image urls from s3 to the pet object
-  const petsWithImageUrls = await Promise.all(
-    pets.map(async (pet) => {
-      const petWithImageUrl = {
-        ...pet,
-        Image: await Promise.all(
-          pet.Image.map(async (image) => ({
-            ...image,
-            url: await s3.getSignedUrlPromise("getObject", {
-              Bucket: env.BUCKET_NAME,
-              Key: `${image.id}`,
-            }),
-          }))
-        ),
-      };
+    // attach image urls from s3 to the pet object
+    const petsWithImageUrls = await Promise.all(
+      pets.map(async (pet) => {
+        const petWithImageUrl = {
+          ...pet,
+          Image: await Promise.all(
+            pet.Image.map(async (image) => ({
+              ...image,
+              url: await s3.getSignedUrlPromise("getObject", {
+                Bucket: env.BUCKET_NAME,
+                Key: `${image.id}`,
+              }),
+            }))
+          ),
+        };
 
-      return petWithImageUrl;
-    })
-  );
-  return petsWithImageUrls;
+        return petWithImageUrl;
+      })
+    );
+    return petsWithImageUrls;
   }),
   getUserFavouritePets: protectedProcedure.query(async ({ ctx }) => {
     const userId = ctx.session.user.id;
@@ -368,7 +431,7 @@ export const petRouter = createTRPCRouter({
       where: {
         userId,
         deleted: false,
-        adopted: false,
+        isAdopted: false,
         Favorite: {
           some: {
             userId,
@@ -378,34 +441,34 @@ export const petRouter = createTRPCRouter({
       include: {
         Image: {
           select: {
-            id: true
-          }
-        }
-      }
+            id: true,
+          },
+        },
+      },
     });
     if (pets === undefined) {
       throw new TRPCError({ code: "NOT_FOUND" });
     }
-  // attach image urls from s3 to the pet object
-  const petsWithImageUrls = await Promise.all(
-    pets.map(async (pet) => {
-      const petWithImageUrl = {
-        ...pet,
-        Image: await Promise.all(
-          pet.Image.map(async (image) => ({
-            ...image,
-            url: await s3.getSignedUrlPromise("getObject", {
-              Bucket: env.BUCKET_NAME,
-              Key: `${image.id}`,
-            }),
-          }))
-        ),
-      };
+    // attach image urls from s3 to the pet object
+    const petsWithImageUrls = await Promise.all(
+      pets.map(async (pet) => {
+        const petWithImageUrl = {
+          ...pet,
+          Image: await Promise.all(
+            pet.Image.map(async (image) => ({
+              ...image,
+              url: await s3.getSignedUrlPromise("getObject", {
+                Bucket: env.BUCKET_NAME,
+                Key: `${image.id}`,
+              }),
+            }))
+          ),
+        };
 
-      return petWithImageUrl;
-    })
-  );
-  return petsWithImageUrls;
+        return petWithImageUrl;
+      })
+    );
+    return petsWithImageUrls;
   }),
   getUserAdoptedPets: protectedProcedure.query(async ({ ctx }) => {
     const userId = ctx.session.user.id;
@@ -413,7 +476,7 @@ export const petRouter = createTRPCRouter({
       where: {
         userId,
         deleted: false,
-        adopted: true,
+        isAdopted: true,
         Adoption: {
           some: {
             userId,
@@ -423,34 +486,34 @@ export const petRouter = createTRPCRouter({
       include: {
         Image: {
           select: {
-            id: true
-          }
-        }
-      }
+            id: true,
+          },
+        },
+      },
     });
     if (!pets) {
       throw new TRPCError({ code: "NOT_FOUND" });
     }
-  // attach image urls from s3 to the pet object
-  const petsWithImageUrls = await Promise.all(
-    pets.map(async (pet) => {
-      const petWithImageUrl = {
-        ...pet,
-        Image: await Promise.all(
-          pet.Image.map(async (image) => ({
-            ...image,
-            url: await s3.getSignedUrlPromise("getObject", {
-              Bucket: env.BUCKET_NAME,
-              Key: `${image.id}`,
-            }),
-          }))
-        ),
-      };
+    // attach image urls from s3 to the pet object
+    const petsWithImageUrls = await Promise.all(
+      pets.map(async (pet) => {
+        const petWithImageUrl = {
+          ...pet,
+          Image: await Promise.all(
+            pet.Image.map(async (image) => ({
+              ...image,
+              url: await s3.getSignedUrlPromise("getObject", {
+                Bucket: env.BUCKET_NAME,
+                Key: `${image.id}`,
+              }),
+            }))
+          ),
+        };
 
-      return petWithImageUrl;
-    })
-  );
-  return petsWithImageUrls;
+        return petWithImageUrl;
+      })
+    );
+    return petsWithImageUrls;
   }),
   addAdoption: protectedProcedure
     .input(z.object({ id: z.string() }))
@@ -461,7 +524,7 @@ export const petRouter = createTRPCRouter({
           id: input.id,
         },
         data: {
-          adopted: true,
+          isAdopted: true,
         },
       });
 
