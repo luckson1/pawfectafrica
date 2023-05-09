@@ -10,7 +10,6 @@ datasource db {
     url      = env("DATABASE_URL")
 }
 
-
 // Necessary for Next auth
 model Account {
     id                String  @id @default(cuid())
@@ -39,13 +38,11 @@ model Session {
 }
 
 model User {
-    id            String     @id @default(cuid())
+    id            String    @id @default(cuid())
     name          String?
-    email         String?    @unique
+    email         String?   @unique
     emailVerified DateTime?
     image         String?
-    phoneNumber   String?
-    currentPet    CurrentPet @default(NONE)
 
     role Role @default(USER)
 
@@ -57,6 +54,7 @@ model User {
     Preference Preference[]
     Favorite   Favorite[]
     Adoption   Adoption[]
+    Donor      Donor[]
 }
 
 enum CurrentPet {
@@ -64,25 +62,48 @@ enum CurrentPet {
     CAT
     DOG
     BIRD
+    ALL
 }
 
 enum Role {
     USER
     ADMIN
     DONOR
+    ADOPTER
 }
 
+enum Gender {
+    MALE
+    FEMALE
+    NA
+}
+
+enum Age {
+    BELOW_ONE
+    ONE_TO_TWO
+    TWO_TO_FIVE
+    OVER_FIVE
+}
 model Preference {
-    id       String  @id @default(cuid())
-    user     User    @relation(fields: [userId], references: [id])
-    userId   String
-    breed    String?
-    ageRange String
-    gender   String
-    type     Type
-    children Boolean
-    garden   Boolean
-    active   Boolean
+    id         String     @id @default(cuid())
+    user       User       @relation(fields: [userId], references: [id])
+    userId     String
+    breed      String?
+    ageRange   Age
+    gender     Gender?
+    type       Type
+    hasChildren   Boolean
+    hasGarden     Boolean
+    isActive     Boolean
+    currentPet CurrentPet @default(NONE)
+}
+
+model Donation {
+    id          String @id @default(cuid())
+    user        User   @relation(fields: [userId], references: [id])
+    phoneNumber String
+    reason      String
+    userId      String
 }
 
 model Favorite {
@@ -107,28 +128,30 @@ model Pet {
     description   String
     Image         Image[]
     breed         String?
-    ageRange      String
-    gender        String
+    ageRange      Age
+    gender        Gender
     type          Type
-    children      Boolean
-    garden        Boolean
-    active        Boolean
-    adopted       Boolean @default(false)
-    neutered      Boolean
+    isChildrenSafe      Boolean
+    isNeedGarden        Boolean
+    isActive        Boolean
+    isAdopted       Boolean @default(false)
+    isNeutered      Boolean
     deleted       Boolean @default(false)
-    petTorrelance String
+    petTorrelance CurrentPet
 
-    donor        User           @relation(fields: [userId], references: [id])
+    donor        User          @relation(fields: [userId], references: [id])
     userId       String
     Vaccinations Vaccination[]
     Favorite     Favorite[]
     Adoption     Adoption[]
 }
+
 enum Type {
     DOG
     CAT
     BIRD
 }
+
 model Vaccination {
     id          String   @id @default(cuid())
     rabies      Boolean
