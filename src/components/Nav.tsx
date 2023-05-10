@@ -73,7 +73,7 @@ const isAuthed=status==="authenticated"
     </ul>
   </div>
   <div className="navbar-end">
-    <button className="btn btn-primary"     onClick={
+    <button className="btn btn-primary btn-sm"     onClick={
              isAuthed
                 ? () => signOut()
                 : () => {             
