@@ -4,6 +4,17 @@ import { FaHandshake } from "react-icons/fa";
 import { FiDollarSign } from "react-icons/fi";
 import { BiDonateHeart } from "react-icons/bi";
 import { Nav } from "~/components/Nav";
+import {
+    BarChart,
+    Bar,
+    XAxis,
+    YAxis,
+    CartesianGrid,
+    Tooltip,
+    ResponsiveContainer,
+    Label,
+  } from "recharts";
+  import Image from "next/image";
 
 const data = [
   {
@@ -36,17 +47,7 @@ const chartData = [
   { month: "May", revenue: 1200 },
 ];
 
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  Label,
-} from "recharts";
-import Image from "next/image";
+
 
 interface RevenueChartProps {
   data: { month: string; revenue: number }[];
