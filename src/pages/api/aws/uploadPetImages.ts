@@ -20,10 +20,11 @@ export default async function handler(
 try {
   const session= await getServerAuthSession({req, res}) 
   const userId= session?.user?.id
-  const petId= (req.query.petId as string)
+  const petId= req.query.petId
+
     // make entries to image table for the product images
    
-  if (userId) {
+  if (userId && typeof petId==='string') {
   const image = await prisma.image.create({
     data: {
       userId,
@@ -48,7 +49,7 @@ try {
       uploadUrl,
       key: Key,
     });
-  }
+  } return 
 } catch (error) {
   console.log(error)
 }
