@@ -72,7 +72,32 @@ export const userRouter = createTRPCRouter({
 
       return preferences;
     }),
-
+  createDonorProfile: protectedProcedure
+    .input(
+      z.object({
+        phoneNumber: z.string().regex(/^(\+254|0)[1-9]\d{8}$/),
+        reason: z.string().min(10, { message: "too short" }),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const userId = ctx.session.user.id;
+      const donorProfile= await ctx.prisma.donorProfile.create({
+        data: {
+          userId,
+          reason: input.reason,
+          phoneNumber: input.phoneNumber
+        }
+      })
+      const donor=await ctx.prisma.user.update({
+        where: {
+          id: userId
+        },
+        data: {
+          role: "DONOR"
+        }
+      })
+      return {donor, donorProfile}
+    }),
   updatePreferences: protectedProcedure
     .input(
       z.object({
@@ -101,8 +126,15 @@ export const userRouter = createTRPCRouter({
           isActive: active === "true",
         },
       });
-
-      return { preferences };
+      const donor=await ctx.prisma.user.update({
+        where: {
+          id
+        },
+        data: {
+          role: "ADOPTER"
+        }
+      })
+      return { preferences, donor };
     }),
   getProfile: protectedProcedure.query(async ({ ctx }) => {
     const id = ctx.session.user.id;
