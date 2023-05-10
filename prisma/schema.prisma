@@ -54,7 +54,7 @@ model User {
     Preference Preference[]
     Favorite   Favorite[]
     Adoption   Adoption[]
-    Donation      Donation[]
+    DonorProfile      DonorProfile[]
 }
 
 enum CurrentPet {
@@ -99,7 +99,7 @@ model Preference {
     currentPet  CurrentPet @default(NONE)
 }
 
-model Donation {
+model DonorProfile {
     id          String @id @default(cuid())
     user        User   @relation(fields: [userId], references: [id])
     phoneNumber String
