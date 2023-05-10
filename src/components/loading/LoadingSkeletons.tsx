@@ -4,7 +4,7 @@ function LoadingSkeleton() {
   return (
     <div
     role="status"
-    className="max-w-sm w-full p-4 border border-gray-200 rounded shadow animate-pulse md:p-6 dark:border-gray-700 my-5"
+    className="max-w-md h-[28rem] w-full p-4 border border-gray-200 rounded shadow animate-pulse md:p-6 dark:border-gray-700 my-5"
   >
     <div className="flex items-center justify-center h-48 mb-4 bg-gray-300 rounded dark:bg-gray-700">
       <svg
