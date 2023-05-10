@@ -31,7 +31,7 @@ const isAuthed=status==="authenticated"
           </button>
           <ul className="p-2 bg-base-100 z-100 shadow shadow-primary/100">
           <li><button      onClick={() => {
-                isAuthed ? router.push("/dashboard") : router.push("/auth");
+                isAuthed ? router.push("/pets") : router.push("/auth");
               }}>Adopt a pet</button></li>
           <li><button    onClick={() => {
                     router.push("/doner-onboarding");
@@ -62,7 +62,7 @@ const isAuthed=status==="authenticated"
         </button>
         <ul className="p-2 bg-base-100 z-100 shadow shadow-primary/100">
           <li><button      onClick={() => {
-                  isAuthed ? router.push("/dashboard") : router.push("/auth");
+                  isAuthed ? router.push("/pets") : router.push("/auth");
               }}>Adopt a pet</button></li>
           <li><button    onClick={() => {
                     router.push("/doner-onboarding");
