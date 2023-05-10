@@ -64,16 +64,14 @@ const Onboarding = () => {
   const isUnAthorised = status === "unauthenticated";
   const router = useRouter();
   useEffect(() => {
-    if (isOnboarded) router.push("/dashboard");
+    if (isOnboarded) router.push("/pets");
   }, [isOnboarded, router]);
 
   const { mutate: onboarding, isLoading } = api.user.onboarding.useMutation({
-    onSuccess: () => router.push("/dashboard"),
+    onSuccess: () => router.push("/pets"),
   });
 
-  const onSubmit = handleSubmit((data) => {
-    onboarding(data);
-  });
+ 
 
   if (isUnAthorised) return <LoginCard />;
   if (isLoadingStatus)
@@ -93,7 +91,9 @@ const Onboarding = () => {
         <form
           className="flex h-fit w-full flex-row flex-wrap justify-around rounded-md px-5 py-10 md:px-10 md:py-16"
             // eslint-disable-next-line @typescript-eslint/no-misused-promises
-            onSubmit={onSubmit}
+            onSubmit={ handleSubmit((data) => {
+              onboarding(data);
+            })}
         >
           <div className="form-control w-full max-w-xs mt-5">
             <label className="label">
