@@ -13,6 +13,8 @@ import { Toaster, toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { Nav } from "~/components/Nav";
 import Dropzone from "~/components/Dropezone";
+import axios from "axios";
+import type { Pet } from "@prisma/client";
 enum CurrentPet {
   NONE = "NONE",
   CAT = "CAT",
@@ -36,7 +38,7 @@ enum Age {
     TWO_TO_FIVE="TWO_TO_FIVE",
     OVER_FIVE="OVER_FIVE"
 }
-const DonorSchema = z.object({
+const PetSchema = z.object({
 name: z.string().min(1, { message: 'Name Required' }),
 description: z.string().min(10, { message: 'Description too short' }),
 neutered: z.enum(['true', 'false'], {errorMap: ()=> {return {message: "Please select one of the options"}}}),
@@ -50,14 +52,15 @@ neutered: z.enum(['true', 'false'], {errorMap: ()=> {return {message: "Please se
   petTorrelance: z.nativeEnum(CurrentPet, {errorMap: ()=> {return {message: "Please select one of the options"}}}),
   images: z.array(z.object({
     name: z.string().nonempty(),
-    file: z.object({
-      size: z.number().max(5000000),
+    path: z.string().nonempty(),
+ 
+      size: z.number().max(10000000),
       type: z.string().regex(/^image\/.+$/)
-    })
+
   })),
 });
 
-export type DonorValues = z.infer<typeof DonorSchema>;
+export type PetValues = z.infer<typeof PetSchema>;
 const PetOnboarding = () => {
   const {
     register,
@@ -65,22 +68,40 @@ const PetOnboarding = () => {
     control,
     watch,
     formState: { errors },
-  } = useForm<DonorValues>({
-    resolver: zodResolver(DonorSchema),
+  } = useForm<PetValues>({
+    resolver: zodResolver(PetSchema),
   });
   const { data, status } = useSession();
   const { field } = useController({ name: "images", control });
   const userRole = data?.user?.role;
-  const isOnboarded = userRole === "ADOPTER";
+  const isOnboarded = userRole === "DONOR" || "ADMIN";
   const isLoadingStatus = status === "loading";
   const isUnAthorised = status === "unauthenticated";
   const router = useRouter();
   useEffect(() => {
-    if (isOnboarded) router.push("/dashboard");
+    if (!isOnboarded) router.push("/donorOnboarding");
   }, [isOnboarded, router]);
+const images=watch("images")
+  const uploadToS3 =async (pet:Pet)=> {
+    if (!images) {
+      return null;
+    }
+    
+    // loop through files and create a file entry in db, then create s3 signed url using file id
+    for (const image of images) {
+      const { data }: { data: { uploadUrl: string; key: string } } =
+        await axios.get(
+          `/api/aws/uploadPetImages?petId=${pet.id}&userId=${pet.userId}`
+        );
+    
+      const { uploadUrl } = data;
+
+      await axios.put(uploadUrl, image);
+    }
+  }
 
   const { mutate: onboarding, isLoading } = api.pet.createPetProfile.useMutation({
-    onSuccess: () => router.push("/dashboard"),
+    onSuccess: async(data) => {await uploadToS3(data); router.push("/pets")},
   });
 
   const onSubmit = handleSubmit((data) => {
@@ -94,7 +115,8 @@ const PetOnboarding = () => {
         <Loading />
       </div>
     );
-    console.log(watch("children"))
+  console.log(errors)
+  console.log(watch("images"))
   return (
     <>
     <Nav />
@@ -341,7 +363,7 @@ const PetOnboarding = () => {
      
             <div className="form-control w-full max-w-xs ">
               <label className="label">
-                <span className="label-text">Attach any project files</span>
+                <span className="label-text">Attach the pet images</span>
               </label>
 
               <Controller
