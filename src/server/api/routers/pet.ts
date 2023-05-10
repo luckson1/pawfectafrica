@@ -246,23 +246,36 @@ export const petRouter = createTRPCRouter({
               id: true,
             },
           },
+          donor: {
+            select: {
+              name: true,
+              DonorProfile: {
+                select: {
+                  phoneNumber: true
+                }
+              }
+            }
+          }
         },
       });
       if (!pet) {
         throw new TRPCError({ code: "NOT_FOUND" });
       }
       // attach images url from S3 storage to pet object
-      const petWithImageUrls = {
+      const petWithImageUrl = {
         ...pet,
-        Image: pet.Image.map(async (image) => ({
-          ...image,
-          url: await s3.getSignedUrlPromise("getObject", {
-            Bucket: env.BUCKET_NAME,
-            Key: `${image.id}`,
-          }),
-        })),
+        Image: await Promise.all(
+          pet.Image.map(async (image) => ({
+            ...image,
+            url: await s3.getSignedUrlPromise("getObject", {
+              Bucket: env.BUCKET_NAME,
+              Key: `${image.id}`,
+            }),
+          }))
+        ),
       };
-      return petWithImageUrls;
+
+      return petWithImageUrl;
     }),
   getPetsByType: protectedProcedure
     .input(z.object({ type: z.nativeEnum(Type) }))
