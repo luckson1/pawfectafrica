@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import type { ControllerRenderProps, Noop,} from "react-hook-form";
 import { BsCloudUpload } from "react-icons/bs";
-import type { DonorValues} from "~/pages/petOnboarding";
+import type { PetValues} from "~/pages/petOnboarding";
 export interface MediaData extends Blob {
   name:string
 }
@@ -11,7 +11,7 @@ export interface MediaData extends Blob {
 
 const Dropzone=({ field, onBlur, }: {
   onBlur: Noop,
-  field: ControllerRenderProps<DonorValues, "images">
+  field: ControllerRenderProps<PetValues, "images">
 }) => {
   const [files, setFiles] = useState<((MediaData ) & { preview: string, })[]>([]);
   const {getRootProps, getInputProps, isDragActive} = useDropzone({
@@ -20,7 +20,7 @@ const Dropzone=({ field, onBlur, }: {
     },
     onDrop: (acceptedFiles: MediaData[] ) => {
    
-   
+      field.onChange(acceptedFiles);
       setFiles(acceptedFiles.map(file => Object.assign(file, {
         preview: URL.createObjectURL(file)
       
