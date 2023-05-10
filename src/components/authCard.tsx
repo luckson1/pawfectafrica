@@ -6,7 +6,7 @@ import {  useForm } from "react-hook-form";
 import { ErrorMessage } from "@hookform/error-message";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-const handleLogin= () =>  signIn("google", { callbackUrl: "/dashboard" })
+const handleLogin= () =>  signIn("google", { callbackUrl: "/onboarding" })
 
 export const LoginCard = () => {
   const emailSchema=z.object({email: z.string().email({message: "Enter a Valid Email!"}).nonempty("Email Required!"),})
