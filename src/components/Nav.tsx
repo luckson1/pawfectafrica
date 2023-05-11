@@ -118,19 +118,17 @@ export const Nav = () => {
               className="dropdown-bottom dropdown-content menu rounded-box menu-compact mt-3 w-52 bg-base-100 p-2 shadow"
             >
               <li>
-                <button onClick={()=>router.push("/pets")}>
-All pets
-                </button>
+                <button onClick={() => router.push("/pets")}>All pets</button>
               </li>
               <li>
-                <button onClick={()=>router.push("/mypets")}>
-My pets
-                </button>
+                <button onClick={() => router.push("/mypets")}>My pets</button>
               </li>
               <li>
- {   role==="ADMIN"         &&   <button onClick={()=>router.push("/dashboard")}>
-Dashboard
-                </button>}
+                {role === "ADMIN" && (
+                  <button onClick={() => router.push("/dashboard")}>
+                    Dashboard
+                  </button>
+                )}
               </li>
             </ul>
           )}
@@ -149,26 +147,23 @@ Dashboard
         />
       </div>
       <div className="navbar-center hidden lg:flex">
-      {isAuthed && (
-        
-        <ul className="menu menu-horizontal px-1">
-              <li>
-                <button onClick={()=>router.push("/pets")}>
-All pets
+        {isAuthed && (
+          <ul className="menu menu-horizontal px-1">
+            <li>
+              <button onClick={() => router.push("/pets")}>All pets</button>
+            </li>
+            <li>
+              <button onClick={() => router.push("/mypets")}>My pets</button>
+            </li>
+            <li>
+              {role === "ADMIN" && (
+                <button onClick={() => router.push("/dashboard")}>
+                  Dashboard
                 </button>
-              </li>
-              <li>
-                <button onClick={()=>router.push("/mypets")}>
-My pets
-                </button>
-              </li>
-              <li>
- {   role==="ADMIN"         &&   <button onClick={()=>router.push("/dashboard")}>
-Dashboard
-                </button>}
-              </li>
-            </ul>
-          )}
+              )}
+            </li>
+          </ul>
+        )}
         {!isAuthed && (
           <ul className="menu menu-horizontal px-1">
             <li>
@@ -225,23 +220,23 @@ Dashboard
             </li>
           </ul>
         )}
-         
       </div>
       <div className="navbar-end gap-3">
-        {!isDonor && (
-          <button
-            className="btn-primary btn-sm  btn hidden text-sm capitalize md:flex"
-            onClick={
-              isAuthed
-                ? () => router.push("/donorOnboarding")
-                : () => {
-                    router.push("/auth");
-                  }
-            }
-          >
-            Rehome a pet
-          </button>
-        )}
+        <button
+          className="btn-primary btn-sm  btn hidden text-sm capitalize md:flex"
+          onClick={
+            isAuthed && !isDonor
+              ? () => router.push("/donorOnboarding")
+              : isAuthed && isDonor
+              ? () => router.push("/petOnboarding")
+              : () => {
+                  router.push("/auth");
+                }
+          }
+        >
+          Rehome a pet
+        </button>
+
         <button
           className="btn-ghost btn-sm btn gap-3 text-sm capitalize text-black"
           onClick={
