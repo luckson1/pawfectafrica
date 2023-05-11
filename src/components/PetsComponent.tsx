@@ -103,7 +103,7 @@ addToFavourites({id})
   }
 
   return (
-    <div className="h-fit w-full flex flex-col-reverse md:flex-col  gap-y-5  ">
+    <div className="h-fit w-full flex flex-col  gap-y-5  ">
       <Toaster position="top-right" reverseOrder={false} />
 
    
