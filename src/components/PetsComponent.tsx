@@ -103,28 +103,28 @@ addToFavourites({id})
   }
 
   return (
-    <div className="h-fit w-full flex flex-col  gap-y-5  ">
+    <div className="h-fit w-full flex flex-col  ">
       <Toaster position="top-right" reverseOrder={false} />
 
    
           <div className="flex w-full flex-col my-5 gap-y-2 ">
-          <p className="mx-5 text-center">
+          <p className="mx-2 text-center">
              This is a pet you could adopt? Swipe the card right.
           </p>
           {/* <p className="mx-5 text-center text-xl font-bold">Else</p> */}
-          <p className="mx-5 text-center">
+          <p className="mx-2 text-center">
             Swipe left to remove the pet from the dashboard
           </p>
-        {  removedPet && <p className="mx-5 text-center text-primary font-bold">
+        {  removedPet && <p className="mx-2 text-center text-primary font-bold">
            {showInfo}
           </p>}
 
         </div>
-      <div className="mx-auto flex h-[36rem] w-full max-w-xl flex-col mb-10">
+      <div className="mx-auto flex h-[30rem] w-full max-w-xl flex-col mb-10">
     
         {pets?.map((pet) => (
           <TinderCard
-            className=" absolute  h-[36rem] w-full max-w-xl"
+            className=" absolute  h-[30rem] w-full max-w-xl"
             key={pet.id}
             onSwipe={(dir) => swiped(dir, pet.id)}
             onCardLeftScreen={() => outOfFrame(pet.name)}
