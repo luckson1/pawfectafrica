@@ -8,13 +8,12 @@ import { AiFillSnippets } from "react-icons/ai";
 import { MdPets } from "react-icons/md";
 import { MdPayment } from "react-icons/md";
 import { FaFileContract } from "react-icons/fa";
-import { Nav } from "~/components/Nav";
 import LoadingSkeleton from "~/components/loading/LoadingSkeletons";
 import { api } from "~/utils/api";
 
 function PetId() {
   const params = useSearchParams();
-  const hasId = params.has("id");
+
   const id = params.get("id") ?? "";
   type PetImage = {
     url: string;
@@ -27,21 +26,43 @@ function PetId() {
   }
   const [display, setDisplay] = useState(DisplayTypes.BIO);
   const [currentImage, setCurrentImage] = useState<PetImage>();
-  const { data: pet, isLoading } = api.pet.getOnePet.useQuery(
+  const { data: pet, isLoading, isError, error } = api.pet.getOnePet.useQuery(
     { id },
     {
       onSuccess: (data) => setCurrentImage(data.Image.at(0)),
     }
   );
-  if (!hasId || (!pet && !isLoading))
-    return (
-      <div className="h-[calc(100vh-4rem)] w-screen">
-        <img src="/error.svg" alt="error" />
+
+    if(isError  && !isLoading) {
+      return <div className="w-full h-full flex flex-col">
+        <div className="w-full h-1/2">
+  
+  <img src="/error.svg" alt="Pet"/>
+        </div>
+  <h2 className="text-red-500 text-6xl">Something Wrong Occured : {error?.message}</h2>
+  
       </div>
-    );
-  if (isLoading) {
-    return <LoadingSkeleton />;
-  }
+    }
+    if(!pet && !isLoading) {
+      return <div className="w-full h-full flex flex-col">
+        <div className="w-full h-1/2">
+  
+  <img src="/error.svg" alt="Pet"/>
+        </div>
+  <h2 className="text-red-500 text-6xl">Something Wrong Occured </h2>
+  
+      </div>
+    }
+
+
+if(isLoading) {
+return(
+  <div className="flex h-full w-full items-center justify-center  ">
+  {" "}
+  <LoadingSkeleton />
+</div>
+)
+}
   return (
     <>
       <Head>
@@ -50,7 +71,7 @@ function PetId() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.png" />
       </Head>
-      <Nav />
+   
       <div className=" my-16 flex flex-col gap-10">
         <div className="flex h-fit min-h-[50vh] w-screen flex-col gap-10 ">
           <div className=" flex h-full  w-full flex-col justify-center gap-10  lg:h-[90%] lg:flex-row lg:pt-10 ">
