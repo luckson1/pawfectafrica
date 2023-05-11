@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import type { ControllerRenderProps, Noop,} from "react-hook-form";
 import { BsCloudUpload } from "react-icons/bs";
-import type { PetValues} from "~/pages/petOnboarding";
+import type { PetValues} from "~/pages/addPet";
 export interface MediaData extends Blob {
   name:string
 }
