@@ -32,7 +32,7 @@ const Dropzone=({ field, onBlur, }: {
     <div className='inline-flex border-2 border-slate-300 rounded mb-2 mr-2 w-16 h-16 lg:w-24 lg:h-24 p-1 border-box' key={file.name}>
       <div className='flex overflow-hidden '>
         <img
-        alt="furniture"
+        alt="pet"
           src={file.preview}
 
          className='block w-auto h-full'
