@@ -8,11 +8,10 @@ import { useSession } from "next-auth/react";
 import TinderCard from "react-tinder-card";
 
 const Pets = () => {
-  const [showModal, setShowModal] = useState(false);
+  
   const [lastDirection, setLastDirection] = useState<string>();
   const [removedPet, setRemovedPet] = useState<string>("");
-  const [selectedPet, setSelectedPet] = useState<string>();
-  const [displayedPets, setDisplayedPets] = useState();
+
 
   const router = useRouter();
 
@@ -22,23 +21,22 @@ const Pets = () => {
     error,
     isLoading,
   } = api.pet.getAllPets.useQuery();
-
-  const { data, status } = useSession();
+const {mutate:addToFavourites}=api.user.addToFavourites.useMutation()
+  const { data} = useSession();
 
   const userRole = data?.user?.role;
-  const isOnboarded = userRole === "ADOPTER";
-  const isLoadingStatus = status === "loading";
-  const isUnAthorised = status === "unauthenticated";
+  const isOnboarded = userRole === "ADOPTER" ||  userRole === "DONOR" ||  userRole === "ADMIN"
+  
 
   useEffect(() => {
-    if (isOnboarded) router.push("/pets");
+    if (!isOnboarded) router.push("/onboarding");
   }, [isOnboarded, router]);
   useEffect(() => {
     if (isError) {
       toast.error(`${error.message}`, { duration: 6000 });
     }
   }, [error, isError]);
-  let showInfo = "";
+
   const outOfFrame = function (name: string) {
     setRemovedPet(name);
   };
@@ -47,13 +45,14 @@ const Pets = () => {
 
     // call action to update matches when one swipes right
     if (direction === "right") {
-      //   return dispatch(updateMatchesAction(pet));
+
+addToFavourites({id})
     }
     return;
   };
 
-  const showInfoFunc = () => {
-    showInfo =
+
+    const showInfo =
       lastDirection === "right"
         ? `${removedPet}  was added to your favourite list`
         : lastDirection === "left"
@@ -63,9 +62,37 @@ const Pets = () => {
         : lastDirection === "down"
         ? removedPet + " left the screen"
         : "";
-    return showInfo;
-  }; // fetch prefered pets
-  const swipeAction = showInfoFunc();
+        if(isError  && !isLoading) {
+          return <div className="w-full h-full flex flex-col">
+            <div className="w-full h-1/2">
+      
+      <img src="/error.svg" alt="Pet"/>
+            </div>
+      <h2 className="text-red-500 text-6xl">Something Wrong Occured : {error?.message}</h2>
+      
+          </div>
+        }
+        if(!pets && !isLoading) {
+          return <div className="w-full h-full flex flex-col">
+            <div className="w-full h-1/2">
+      
+      <img src="/error.svg" alt="Pet"/>
+            </div>
+      <h2 className="text-red-500 text-6xl">Something Wrong Occured </h2>
+      
+          </div>
+        }
+        if(pets && pets.length<=0) {
+          return <div className="w-full h-full flex flex-col">
+            <div className="w-full h-1/2">
+      
+      <img src="/pet.svg" alt="Pet"/>
+            </div>
+      <h2 className="text-6xl">No Pets Found</h2>
+      
+          </div>
+        }
+  
   if(isLoading) {
     return(
       <div className="flex h-full w-full items-center justify-center  ">
