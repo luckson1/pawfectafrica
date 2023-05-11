@@ -22,7 +22,7 @@ type DonorValues=z.infer<typeof DonorSchema>
       });
 const router=useRouter()
 
-      const {mutate: createProfile, isLoading, isError, error }=api.user.createDonorProfile.useMutation({onSuccess: ()=>router.push("/petOnboarding")})
+      const {mutate: createProfile, isLoading, isError, error }=api.user.createDonorProfile.useMutation({onSuccess: ()=>router.push("/addPet")})
   return (
     <div className='w-screen h-screen bg-base-100 flex justify-center items-center '>
         <div className='card shadow-xl shadow-primary/100 w-full max-w-md h-full max-h-[40rem] flex justify-center items-center flex-col p-7'>

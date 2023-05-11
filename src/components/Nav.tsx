@@ -228,7 +228,7 @@ export const Nav = () => {
             isAuthed && !isDonor
               ? () => router.push("/donorOnboarding")
               : isAuthed && isDonor
-              ? () => router.push("/petOnboarding")
+              ? () => router.push("/addPet")
               : () => {
                   router.push("/auth");
                 }
