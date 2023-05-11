@@ -36,7 +36,7 @@ onSubmit={handleSubmit((data) => {createProfile(data)})}
             <label className="label">
               <span className="label-text">
                 {" "}
-            What your phoneNumber?
+            What your phone number?
               </span>
             </label>
             <input
@@ -49,7 +49,7 @@ onSubmit={handleSubmit((data) => {createProfile(data)})}
           </div>
           <div className="form-control w-full max-w-xs ">
               <label className="label">
-                <span className="label-text">Reason for Adoption?</span>
+                <span className="label-text">Reason for Donating the pet?</span>
               </label>
               <textarea
                 className="textarea-bordered  textarea h-28"
