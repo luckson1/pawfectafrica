@@ -124,7 +124,7 @@ addToFavourites({id})
     
         {pets?.map((pet) => (
           <TinderCard
-            className=" absolute  h-[30rem] w-full max-w-xl"
+            className=" absolute  h-[30rem] w-full max-w-xl pressable"
             key={pet.id}
             onSwipe={(dir) => swiped(dir, pet.id)}
             onCardLeftScreen={() => outOfFrame(pet.name)}
