@@ -18,7 +18,7 @@ const Tab = ({
   const [animationParent] = useAutoAnimate();
   return (
     <div
-      className="mx-auto flex h-fit w-full max-w-xl flex-row items-center justify-center rounded-lg bg-base-200 p-1 text-xs"
+      className="mx-auto flex h-fit w-full max-w-xl flex-row items-center justify-between rounded-lg bg-base-200 p-1 text-xs"
       ref={animationParent}
     >
       {view === "Favorites" ? (
