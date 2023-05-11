@@ -164,6 +164,22 @@ export const petRouter = createTRPCRouter({
             id: true,
           },
         },
+        donor: {
+          select: {
+            id: true,
+            image: true,
+          },
+        },
+        Adoption: {
+          select: {
+            user: {
+              select: {
+                id: true,
+                image: true,
+              },
+            },
+          },
+        },
       },
     });
     if (!pets) {
@@ -251,11 +267,11 @@ export const petRouter = createTRPCRouter({
               name: true,
               DonorProfile: {
                 select: {
-                  phoneNumber: true
-                }
-              }
-            }
-          }
+                  phoneNumber: true,
+                },
+              },
+            },
+          },
         },
       });
       if (!pet) {
@@ -358,7 +374,7 @@ export const petRouter = createTRPCRouter({
       );
       return petsWithImageUrls;
     }),
-  getDonatedPets: protectedProcedure.query(async ({ ctx }) => {
+  getUserDonatedPets: protectedProcedure.query(async ({ ctx }) => {
     const userId = ctx.session.user.id;
     const pets = await ctx.prisma.pet.findMany({
       where: {
