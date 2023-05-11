@@ -7,11 +7,8 @@ import { z } from "zod";
 import { api } from "~/utils/api";
 import LoadingButton from "~/components/loading/LoadingButton";
 import { useSession } from "next-auth/react";
-import { LoginCard } from "~/components/authCard";
-import Loading from "~/components/loading/pageSkeleton";
-import { Toaster, toast } from "react-hot-toast";
+import { Toaster} from "react-hot-toast";
 import { useRouter } from "next/navigation";
-import { Nav } from "~/components/Nav";
 import Dropzone from "~/components/Dropezone";
 import axios from "axios";
 import type { Pet } from "@prisma/client";
@@ -71,12 +68,11 @@ const PetOnboarding = () => {
   } = useForm<PetValues>({
     resolver: zodResolver(PetSchema),
   });
-  const { data, status } = useSession();
+  const { data } = useSession();
   const { field } = useController({ name: "images", control });
   const userRole = data?.user?.role;
-  const isOnboarded = userRole === "DONOR" || "ADMIN";
-  const isLoadingStatus = status === "loading";
-  const isUnAthorised = status === "unauthenticated";
+  const isOnboarded = userRole === "DONOR" || userRole === "ADMIN";
+
   const router = useRouter();
   useEffect(() => {
     if (!isOnboarded) router.push("/donorOnboarding");
@@ -108,18 +104,9 @@ const images=watch("images")
     onboarding(data);
   });
 
-  if (isUnAthorised) return <LoginCard />;
-  if (isLoadingStatus)
-    return (
-      <div className="h-[300px] w-[300px]">
-        <Loading />
-      </div>
-    );
-  console.log(errors)
-  console.log(watch("images"))
   return (
     <>
-    <Nav />
+    
     <div className="mb-2 mt-0  flex w-full max-full items-center justify-center rounded-md bg-base-100  md:mt-16">
       <Toaster position="top-right" reverseOrder={true} />
       <div className="flex h-fit w-full flex-col rounded-md bg-base-100 bg-opacity-40 shadow-lg shadow-slate-500/100  max-w-4xl">
@@ -327,9 +314,9 @@ const images=watch("images")
               className="select-bordered  select"
               {...register("active")}
             >
-              <option value="">How active</option>
-              <option value="true">Yes, we will be going for runs</option>
-              <option value="false">No, just walks</option>
+              <option value="">How active is the pet</option>
+              <option value="true">Very active</option>
+              <option value="false">Not very, just walks</option>
           
             </select>
             <label className="label"></label>

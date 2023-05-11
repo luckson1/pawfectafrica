@@ -7,11 +7,8 @@ import { z } from "zod";
 import { api } from "~/utils/api";
 import LoadingButton from "~/components/loading/LoadingButton";
 import { useSession } from "next-auth/react";
-import { LoginCard } from "~/components/authCard";
-import Loading from "~/components/loading/pageSkeleton";
-import { Toaster, toast } from "react-hot-toast";
+import { Toaster } from "react-hot-toast";
 import { useRouter } from "next/navigation";
-import { Nav } from "~/components/Nav";
 enum CurrentPet {
   NONE = "NONE",
   CAT = "CAT",
@@ -51,21 +48,20 @@ const Onboarding = () => {
   const {
     register,
     handleSubmit,
-    watch,
     formState: { errors },
   } = useForm<Values>({
     resolver: zodResolver(adopterSchema),
   });
-  const { data, status } = useSession();
+  const { data} = useSession();
 
   const userRole = data?.user?.role;
-  const isOnboarded = userRole === "ADOPTER";
-  const isLoadingStatus = status === "loading";
-  const isUnAthorised = status === "unauthenticated";
+  const isOnboarded = userRole === "ADOPTER" ||  userRole === "ADMIN"
+
   const router = useRouter();
   useEffect(() => {
     if (isOnboarded) router.push("/pets");
   }, [isOnboarded, router]);
+
 
   const { mutate: onboarding, isLoading } = api.user.onboarding.useMutation({
     onSuccess: () => router.push("/pets"),
@@ -73,17 +69,10 @@ const Onboarding = () => {
 
  
 
-  if (isUnAthorised) return <LoginCard />;
-  if (isLoadingStatus)
-    return (
-      <div className="h-[300px] w-[300px]">
-        <Loading />
-      </div>
-    );
-    console.log(watch("children"))
+ 
   return (
     <>
-    <Nav />
+
     <div className="mb-2 mt-0  flex w-full max-full items-center justify-center rounded-md bg-base-100  md:mt-16">
       <Toaster position="top-right" reverseOrder={true} />
       <div className="flex h-fit w-full flex-col rounded-md bg-base-100 bg-opacity-40 shadow-lg shadow-slate-500/100  max-w-4xl">
