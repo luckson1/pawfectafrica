@@ -4,9 +4,9 @@ function LoadingSkeleton() {
   return (
     <div
     role="status"
-    className="max-w-md h-[28rem] w-full p-4 border border-gray-200 rounded shadow animate-pulse md:p-6 dark:border-gray-700 my-5"
+    className="max-w-xl min-h-[28rem] h-full w-full p-4 border border-gray-200 rounded shadow animate-pulse md:p-6 dark:border-gray-700 my-5"
   >
-    <div className="flex items-center justify-center h-48 mb-4 bg-gray-300 rounded dark:bg-gray-700">
+    <div className="flex items-center justify-center h-1/2 mb-4 bg-gray-300 rounded dark:bg-gray-700">
       <svg
         className="w-12 h-12 text-gray-200 dark:text-gray-600"
         xmlns="http://www.w3.org/2000/svg"
