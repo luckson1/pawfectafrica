@@ -1,5 +1,7 @@
 import { TRPCError } from "@trpc/server";
+import { S3 } from "aws-sdk";
 import { z } from "zod";
+import { env } from "~/env.mjs";
 
 import {
   createTRPCRouter,
@@ -29,6 +31,15 @@ enum Age {
   TWO_TO_FIVE = "TWO_TO_FIVE",
   OVER_FIVE = "OVER_FIVE",
 }
+
+const s3 = new S3({
+  apiVersion: "2006-03-01",
+  accessKeyId: env.ACCESS_KEY,
+  secretAccessKey: env.SECRET_KEY,
+  region: env.REGION,
+  signatureVersion: "v4",
+});
+
 export const userRouter = createTRPCRouter({
   onboarding: protectedProcedure
     .input(
@@ -69,8 +80,15 @@ export const userRouter = createTRPCRouter({
           isActive: active === "true",
         },
       });
-
-      return preferences;
+      const user = await ctx.prisma.user.update({
+        where: {
+          id,
+        },
+        data: {
+          role: "ADOPTER",
+        },
+      });
+      return { preferences, user };
     }),
   createDonorProfile: protectedProcedure
     .input(
@@ -81,22 +99,22 @@ export const userRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       const userId = ctx.session.user.id;
-      const donorProfile= await ctx.prisma.donorProfile.create({
+      const donorProfile = await ctx.prisma.donorProfile.create({
         data: {
           userId,
           reason: input.reason,
-          phoneNumber: input.phoneNumber
-        }
-      })
-      const donor=await ctx.prisma.user.update({
+          phoneNumber: input.phoneNumber,
+        },
+      });
+      const donor = await ctx.prisma.user.update({
         where: {
-          id: userId
+          id: userId,
         },
         data: {
-          role: "DONOR"
-        }
-      })
-      return {donor, donorProfile}
+          role: "DONOR",
+        },
+      });
+      return { donor, donorProfile };
     }),
   updatePreferences: protectedProcedure
     .input(
@@ -126,14 +144,14 @@ export const userRouter = createTRPCRouter({
           isActive: active === "true",
         },
       });
-      const donor=await ctx.prisma.user.update({
+      const donor = await ctx.prisma.user.update({
         where: {
-          id
+          id,
         },
         data: {
-          role: "ADOPTER"
-        }
-      })
+          role: "ADOPTER",
+        },
+      });
       return { preferences, donor };
     }),
   getProfile: protectedProcedure.query(async ({ ctx }) => {
@@ -190,4 +208,159 @@ export const userRouter = createTRPCRouter({
     }
     return users;
   }),
+  getAllAdopters: protectedAdminProcedure.query(async ({ ctx }) => {
+    const users = await ctx.prisma.user.findMany({
+      where: {
+        role: "ADOPTER",
+      },
+      include: {
+        Preference: {
+          select: {
+            type: true,
+          },
+        },
+        Adoption: {
+          select: {
+            pet: {
+              select: {
+                id: true,
+                Image: {
+                  select: {
+                    id: true,
+                    petId: true
+                  },
+                },
+              },
+            },
+          },
+        },
+        Favorite: {
+          select: {
+            pet: {
+           
+              select: {
+                id: true,
+                Image: {
+                  select: {
+                    id: true,
+                    petId: true
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+    if (!users) {
+      throw new TRPCError({ code: "NOT_FOUND" });
+    }
+
+    const usersWithPetImageUrls = await Promise.all(
+      users.map(async (user) => {
+        const adoptionsWithImageUrls = await Promise.all(
+          user.Adoption.map(async (adoption) => {
+            const petWithImageUrl = {
+              ...adoption.pet,
+              Image: await Promise.all(
+                adoption.pet.Image.map(async (image) => ({
+                  ...image,
+                  url: await s3.getSignedUrlPromise("getObject", {
+                    Bucket: env.BUCKET_NAME,
+                    Key: `${image.id}`,
+                  }),
+                }))
+              ),
+            };
+            return petWithImageUrl;
+          })
+        );
+
+        const favoritesWithImageUrls = await Promise.all(
+          user.Favorite.map(async (favorite) => {
+            const petWithImageUrl = {
+              ...favorite.pet,
+              Image: await Promise.all(
+                favorite.pet.Image.map(async (image) => ({
+                  ...image,
+                  url: await s3.getSignedUrlPromise("getObject", {
+                    Bucket: env.BUCKET_NAME,
+                    Key: `${image.id}`,
+                  }),
+                }))
+              ),
+            };
+            return petWithImageUrl;
+          })
+        );
+
+        const userWithImageUrls = {
+          ...user,
+          Adoption: adoptionsWithImageUrls,
+          Favorite: favoritesWithImageUrls,
+        };
+
+        return userWithImageUrls;
+      })
+    );
+
+    return usersWithPetImageUrls;
+  }),
+
+  getAllDonors: protectedAdminProcedure.query(async ({ ctx }) => {
+    const users = await ctx.prisma.user.findMany({
+      where: {
+        OR: [{ role: "ADMIN" }, { role: "DONOR" }],
+      },
+      include: {
+        Pet: {
+          select: {
+         id: true,
+            Image: {
+              select: {
+                id: true,
+                petId: true,
+              },
+            },
+          },
+        },
+      },
+    });
+  
+    const usersWithImageUrls = await Promise.all(
+      users.map(async (user) => {
+        const petsWithImageUrls = await Promise.all(
+          user.Pet.map(async (pet) => {
+            const petWithImageUrl = {
+              ...pet,
+              Image: await Promise.all(
+                pet.Image.map(async (image) => ({
+                  ...image,
+                  url: await s3.getSignedUrlPromise("getObject", {
+                    Bucket: env.BUCKET_NAME,
+                    Key: `${image.id}`,
+                  }),
+                }))
+              ),
+            };
+            return petWithImageUrl;
+          })
+        );
+  
+        const userWithImageUrls = {
+          ...user,
+          Pet: petsWithImageUrls,
+        };
+  
+        return userWithImageUrls;
+      })
+    );
+  
+    if (!usersWithImageUrls) {
+      throw new TRPCError({ code: "NOT_FOUND" });
+    }
+  
+    return usersWithImageUrls;
+  }),
+  
 });
