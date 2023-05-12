@@ -78,9 +78,15 @@ export const Nav = () => {
                   </li>
                   <li>
                     <button
-                      onClick={() => {
-                        router.push("/doner-onboarding");
-                      }}
+                    onClick={
+                      isAuthed && !isDonor
+                        ? () => router.push("/donorOnboarding")
+                        : isAuthed && isDonor
+                        ? () => router.push("/addPet")
+                        : () => {
+                            router.push("/auth");
+                          }
+                    }
                     >
                       Rehome a pet
                     </button>
@@ -99,10 +105,12 @@ export const Nav = () => {
               <li>
                 {!isDonor && (
                   <button
-                    className="btn-primary btn-sm  btn text-sm capitalize text-white"
+                    className="btn-primary btn-sm px-5 btn text-sm capitalize text-white"
                     onClick={
-                      isAuthed
+                      isAuthed && !isDonor
                         ? () => router.push("/donorOnboarding")
+                        : isAuthed && isDonor
+                        ? () => router.push("/addPet")
                         : () => {
                             router.push("/auth");
                           }
@@ -202,9 +210,15 @@ export const Nav = () => {
                 </li>
                 <li>
                   <button
-                    onClick={() => {
-                      router.push("/doner-onboarding");
-                    }}
+                onClick={
+                  isAuthed && !isDonor
+                    ? () => router.push("/donorOnboarding")
+                    : isAuthed && isDonor
+                    ? () => router.push("/addPet")
+                    : () => {
+                        router.push("/auth");
+                      }
+                }
                   >
                     Rehome a Pet
                   </button>
@@ -225,7 +239,7 @@ export const Nav = () => {
       </div>
       <div className="navbar-end gap-3">
         <button
-          className="btn-primary btn-sm  btn hidden text-sm capitalize md:flex"
+          className="btn-primary btn-sm px-5 btn hidden text-sm capitalize md:flex"
           onClick={
             isAuthed && !isDonor
               ? () => router.push("/donorOnboarding")
