@@ -1,4 +1,4 @@
-import React, { type Dispatch, type SetStateAction } from "react";
+import React from "react";
 
 import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
