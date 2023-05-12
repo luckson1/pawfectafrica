@@ -90,11 +90,16 @@ model AdoptionInterest {
     id     String @id @default(cuid())
     user   User   @relation(fields: [userId], references: [id])
     pet    Pet    @relation(fields: [petId], references: [id])
+    status Status @default(PENDING)
     userId String
     petId  String
       @@unique([userId, petId])
 }
-
+ enum Status {
+    PENDING
+    ACCEPTED
+    REJECTED
+ }
 model Preference {
     id          String     @id @default(cuid())
     user        User       @relation(fields: [userId], references: [id])
