@@ -18,7 +18,7 @@ export const Nav = () => {
   return (
     <div
       className={`navbar fixed top-0 z-[1000] ${
-        isAuthed ? "bg-base-100 shadow-lg" : "bg-secondary"
+        isAuthed ? "bg-base-100 shadow-lg" : "bg-accent"
       } px-5 md:px-10 lg:px-20`}
     >
       <div className="navbar-start">
