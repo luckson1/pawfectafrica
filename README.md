@@ -11,16 +11,21 @@ Swipeable cards. These cards contain images of the pets that are available for a
 
 
 
-![Pet Profile](profile.png)
+![Apply to adopt a pet](accepted.png)
+
+
+![Manage your pets](mypets.png)
 
 
 
 Admin Dashboard. The admin has visibility of the entire adoption process as well as all the pets available for adoption. He/She can create, edit and delete pet data on the app. The admin can also allow third parties to also put their pets on the website to get matched with potential adopters. They can charge those putting the pet on adoption a fee to use the service. 
 ### Admin Dashbaord
-![Admin Dashboard](admindashboard.png)
+![Accept or Decline an application](accept-decline.png)
+
+![Admin Dashboard](dashboard.png)
 
 
-![donors](donors.png)
+![manage other pet donors](donors.png)
 
 
 ## Technologies used
