@@ -571,7 +571,7 @@ export const petRouter = createTRPCRouter({
   acceptAdoptionApplication: protectedProcedure
     .input(
       z.object({
-        status: z.enum(["ACCEPTED", "REJECTED"]),
+        status: z.enum(["ACCEPTED"]),
         id: z.string(),
         userId: z.string(),
         petId: z.string(),
@@ -602,6 +602,28 @@ export const petRouter = createTRPCRouter({
         },
       });
       return { acceptedApplication, adoption, successfulAdoption };
+    }),
+    rejectAdoptionApplication: protectedProcedure
+    .input(
+      z.object({
+        status: z.enum(["REJECTED"]),
+        id: z.string(),
+        userId: z.string(),
+        petId: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const rejectedApplication= await ctx.prisma.adoptionInterest.update({
+        where: {
+          id: input.id,
+        },
+        data: {
+          status: input.status,
+        },
+      });
+      
+      
+      return rejectedApplication ;
     }),
   getUserAdoptedPets: protectedProcedure.query(async ({ ctx }) => {
     const userId = ctx.session.user.id;
