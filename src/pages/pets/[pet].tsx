@@ -196,8 +196,8 @@ function PetId() {
                       </button>
                     )}
                     {userApplicationsStatus === "PENDING" && (
-                      <p className="text-center text-xl text-amber-500">
-                        Your adoption application Pending
+                      <p className="text-center text-amber-500">
+                        Your adoption application Pending. Contact the owner on whatsapp to arrange a phone interview
                       </p>
                     )}
                     {userApplicationsStatus === "ACCEPTED" && (
@@ -283,12 +283,12 @@ function PetId() {
                             <button
                               disabled={isHandleDonationLoading}
                               className="btn-sm btn gap-2 bg-green-500 text-xs capitalize"
-                              onClick={() =>
+                              onClick={(e) =>{
                                 handleDonation({
                                   id: application.id,
                                   status: "ACCEPTED",
                                   petId: pet.id,
-                                })
+                                }); e.preventDefault()}
                               }
                             >
                               {" "}
@@ -298,12 +298,12 @@ function PetId() {
                             <button
                               disabled={isHandleDonationLoading}
                               className="btn-sm btn gap-2 bg-red-500 text-xs capitalize"
-                              onClick={() =>
+                              onClick={(e) =>{
                                 handleDonation({
                                   id: application.id,
                                   status: "REJECTED",
                                   petId: pet.id,
-                                })
+                                }) ; e.preventDefault() }
                               }
                             >
                               {" "}
