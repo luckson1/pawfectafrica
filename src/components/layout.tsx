@@ -22,7 +22,7 @@ function Layout({ children }: { children: React.JSX.Element }) {
 
   if (status === "loading")
     return (
-      <div className="h-screen w-screen">
+      <div className="h-screen w-screen flex justify-center items-center">
         <LoadingSkeleton />
         <TableLoading />
       </div>
@@ -46,13 +46,17 @@ function Layout({ children }: { children: React.JSX.Element }) {
     return (
       <div>
         <Nav />
-        <Onboarding />
+      <div className="mt-16">
+      <Onboarding />
+      </div>
       </div>
     );
   return (
     <div>
       <Nav />
-      {children}
+    <div className="mt-16">
+    {children}
+    </div>
     </div>
   );
 }
