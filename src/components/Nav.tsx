@@ -3,7 +3,7 @@ import React, { type Dispatch, type SetStateAction } from "react";
 import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { MdLogin } from "react-icons/md";
+import { MdLogin, MdLogout } from "react-icons/md";
 
 export const Nav = () => {
   const router = useRouter();
@@ -11,12 +11,14 @@ export const Nav = () => {
   const { data, status } = session;
   const isAuthed = status === "authenticated";
   const role = data?.user.role;
+  const userId=data?.user.id
+  console.log(userId)
   const isDonor = role === "ADMIN" || role === "DONOR";
 
   return (
     <div
-      className={`navbar ${
-        isAuthed ? "bg-base-200 bg-opacity-20 shadow-lg" : "bg-secondary"
+      className={`navbar fixed top-0 z-[1000] ${
+        isAuthed ? "bg-base-100 shadow-lg" : "bg-secondary"
       } px-5 md:px-10 lg:px-20`}
     >
       <div className="navbar-start">
@@ -236,7 +238,14 @@ export const Nav = () => {
         >
           Rehome a pet
         </button>
-
+        <Image
+                    alt={data?.user.name?? "Profile Pic"}
+                    src={data?.user?.image?? "https://randomuser.me/api/portraits/lego/5.jpg"}
+                    className="rounded-full h-7 w-7 cursor-pointer"
+                    width={40}
+                    height={40}
+                 onClick={()=> router.push(`/users/id?id=${userId ?? ""}`)}
+                  />
         <button
           className="btn-ghost btn-sm btn gap-3 text-sm capitalize text-black"
           onClick={
@@ -247,7 +256,7 @@ export const Nav = () => {
                 }
           }
         >
-          <MdLogin className="h-6 w-6" /> {isAuthed ? "Logout" : "Login"}
+          {isAuthed ? <> <MdLogout className="h-6 w-6" />  Logout</>: <> <MdLogin className="h-6 w-6" /> Login</> }
         </button>
       </div>
     </div>
