@@ -137,9 +137,9 @@ addToFavourites({id})
                     style={{
                       backgroundImage: `url(${pet.Image.at(0)?.url ?? ""})`,
                     }}
-                    className="card flex h-full w-full items-center justify-end bg-contain bg-no-repeat py-10 shadow-2xl shadow-secondary/100"
+                    className="card flex h-full w-full items-center justify-end bg-contain bg-accent bg-no-repeat py-10 shadow-2xl shadow-primary/100"
                   >
-                    <button className="btn btn-secondary w-full max-w-xs pressable" onClick={()=>router.push(`/pets/id?id=${pet.id}`)} onTouchStart={()=>router.push(`/pets?id=${pet.id}`)}>
+                    <button className="btn btn-primary w-full max-w-xs pressable" onClick={()=>router.push(`/pets/id?id=${pet.id}`)} onTouchStart={()=>router.push(`/pets?id=${pet.id}`)}>
                       Visit {pet.name}&apos;s Profile
                     </button>
                   </div>
