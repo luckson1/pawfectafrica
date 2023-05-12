@@ -20,7 +20,7 @@ const Pets = () => {
     isError,
     error,
     isLoading,
-  } = api.pet.getAllPets.useQuery();
+  } = api.pet.getAllUnadoptedPets.useQuery();
 const {mutate:addToFavourites}=api.user.addToFavourites.useMutation()
   const { data} = useSession();
 

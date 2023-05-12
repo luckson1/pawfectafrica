@@ -144,6 +144,7 @@ export const userRouter = createTRPCRouter({
           isActive: active === "true",
         },
       });
+
       const donor = await ctx.prisma.user.update({
         where: {
           id,
@@ -153,6 +154,15 @@ export const userRouter = createTRPCRouter({
         },
       });
       return { preferences, donor };
+    }),
+    initiateAdoption: protectedProcedure.input(z.object({id: z.string()})).mutation(async({ctx, input})=> {
+      const userId=ctx.session.user.id
+      await ctx.prisma.adoptionInterest.create({
+        data: {
+          userId,
+          petId: input.id
+        }
+      })
     }),
   getProfile: protectedProcedure.query(async ({ ctx }) => {
     const id = ctx.session.user.id;

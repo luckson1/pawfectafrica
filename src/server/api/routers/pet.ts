@@ -153,10 +153,65 @@ export const petRouter = createTRPCRouter({
       throw new TRPCError({ code: "FORBIDDEN" });
     }),
 
-  getAllPets: protectedProcedure.query(async ({ ctx }) => {
+  getAllPets: protectedAdminProcedure.query(async ({ ctx }) => {
     const pets = await ctx.prisma.pet.findMany({
       where: {
         deleted: false,
+      },
+      include: {
+        Image: {
+          select: {
+            id: true,
+          },
+        },
+        donor: {
+          select: {
+            id: true,
+            image: true,
+          },
+        },
+        Adoption: {
+          select: {
+            user: {
+              select: {
+                id: true,
+                image: true,
+              },
+            },
+          },
+        },
+      },
+    });
+    if (!pets) {
+      throw new TRPCError({ code: "NOT_FOUND" });
+    }
+
+    // attach image urls to the pet object
+    const petsWithImageUrls = await Promise.all(
+      pets.map(async (pet) => {
+        const petWithImageUrl = {
+          ...pet,
+          Image: await Promise.all(
+            pet.Image.map(async (image) => ({
+              ...image,
+              url: await s3.getSignedUrlPromise("getObject", {
+                Bucket: env.BUCKET_NAME,
+                Key: `${image.id}`,
+              }),
+            }))
+          ),
+        };
+
+        return petWithImageUrl;
+      })
+    );
+    return petsWithImageUrls;
+  }),
+  getAllUnadoptedPets: protectedProcedure.query(async ({ ctx }) => {
+    const pets = await ctx.prisma.pet.findMany({
+      where: {
+        deleted: false,
+        isAdopted: false
       },
       include: {
         Image: {
@@ -248,13 +303,21 @@ export const petRouter = createTRPCRouter({
     );
     return petsWithImageUrls;
   }),
+  
   getOnePet: protectedProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {
+      const userId=ctx.session.user.id
       const pet = await ctx.prisma.pet.findFirstOrThrow({
         where: {
           id: input.id,
           deleted: false,
+          // AdoptionInterest : {
+          //   some: {
+          //    userId
+          //   }
+            
+          // }
         },
         include: {
           Image: {
@@ -262,8 +325,23 @@ export const petRouter = createTRPCRouter({
               id: true,
             },
           },
+          AdoptionInterest: {
+select: {
+  id: true,
+  userId: true,
+  status: true,
+  user: {
+select: {
+  id: true,
+  name: true,
+  image: true
+}
+  }
+}
+          },
           donor: {
             select: {
+              id: true,
               name: true,
               DonorProfile: {
                 select: {
@@ -293,6 +371,7 @@ export const petRouter = createTRPCRouter({
 
       return petWithImageUrl;
     }),
+
   getPetsByType: protectedProcedure
     .input(z.object({ type: z.nativeEnum(Type) }))
     .query(async ({ ctx, input }) => {
@@ -491,13 +570,42 @@ export const petRouter = createTRPCRouter({
                 Key: `${image.id}`,
               }),
             }))
-          ),
+          ), 
         };
 
         return petWithImageUrl;
       })
     );
     return petsWithImageUrls;
+  }),
+
+  acceptAdoptionApplication: protectedProcedure.input(z.object({status: z.enum(["ACCEPTED", "REJECTED"]), id:z.string(), petId: z.string()})).mutation(async({ctx, input})=> {
+    const userId=ctx.session.user.id
+    const acceptedApplication= await ctx.prisma.adoptionInterest.update({
+      where: {
+       id: input.id
+
+      },
+      data : {
+status: input.status
+      }
+    })
+    const adoption=await ctx.prisma.adoption.create({
+      data: {
+        userId,
+        petId: input.petId
+      }
+    })
+    const successfulAdoption= await ctx.prisma.pet.update({
+where: {
+  id: input.petId,
+},
+
+data: {
+  isAdopted: true
+}
+    })
+    return {acceptedApplication, adoption, successfulAdoption}
   }),
   getUserAdoptedPets: protectedProcedure.query(async ({ ctx }) => {
     const userId = ctx.session.user.id;

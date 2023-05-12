@@ -4,12 +4,16 @@ import { useSearchParams } from "next/navigation";
 import React, { useState } from "react";
 import { BsWhatsapp } from "react-icons/bs";
 import { GoCommentDiscussion } from "react-icons/go";
+import {IoMdCheckmarkCircleOutline} from "react-icons/io"
+import {ImCancelCircle } from "react-icons/im"
 import { AiFillSnippets } from "react-icons/ai";
 import { MdPets } from "react-icons/md";
 import { MdPayment } from "react-icons/md";
 import { FaFileContract } from "react-icons/fa";
 import LoadingSkeleton from "~/components/loading/LoadingSkeletons";
 import { api } from "~/utils/api";
+import {  Toaster, toast } from "react-hot-toast";
+import { useSession } from "next-auth/react";
 
 function PetId() {
   const params = useSearchParams();
@@ -19,6 +23,8 @@ function PetId() {
     url: string;
     id: string;
   };
+  const {data}=useSession()
+  const userId=data?.user.id
   enum DisplayTypes {
     BIO = "BIO",
     DONOR = "DONOR",
@@ -32,8 +38,15 @@ function PetId() {
       onSuccess: (data) => setCurrentImage(data.Image.at(0)),
     }
   );
+  const ctx=api.useContext()
+const {mutate:apply, isLoading:isApplicationLoading}=api.user.initiateAdoption.useMutation({onSuccess: ()=> toast.success("Application sent successfully"), onError: (data)=> toast.error(`An Error Occured: ${data.message}`)})
+  const {mutate:handleDonation, isLoading:isHandleDonationLoading}=api.pet.acceptAdoptionApplication.useMutation({onSettled: ()=>ctx.pet.getOnePet.invalidate() }) 
+const userApplicationsStatus= (pet && pet.AdoptionInterest.filter(p=> (p.userId===userId)))?.at(0)?.status
 
-    if(isError  && !isLoading) {
+const isDonor=(pet && pet.donor.id===userId) ?? false
+const allApplications=pet?.AdoptionInterest.map(p=> p)
+
+if(isError  && !isLoading) {
       return <div className="w-full h-full flex flex-col">
         <div className="w-full h-1/2">
   
@@ -53,7 +66,7 @@ function PetId() {
   
       </div>
     }
-
+ 
 
 if(isLoading) {
 return(
@@ -73,6 +86,7 @@ return(
       </Head>
    
       <div className=" my-16 flex flex-col gap-10">
+      <Toaster position="top-right" reverseOrder={false} />
         <div className="flex h-fit min-h-[50vh] w-screen flex-col gap-10 ">
           <div className=" flex h-full  w-full flex-col justify-center gap-10  lg:h-[90%] lg:flex-row lg:pt-10 ">
             <div className="ld:justify-center flex h-[50%] w-full flex-col-reverse items-center justify-end gap-3 lg:h-full lg:w-[55%] lg:flex-row ">
@@ -151,13 +165,16 @@ return(
             </div>
             <div className="flex h-[50%] w-full flex-col items-center justify-around  lg:h-full lg:w-[35%]">
               <div className=" card mx-auto my-auto   w-full max-w-xl rounded-lg bg-base-100 shadow-base-content lg:shadow-lg ">
-                <div className="card-body w-full">
+               {!isDonor && <div className="card-body w-full">
                   <p className="text-center text-2xl tracking-widest text-blue-700">
                     {pet.name}
                   </p>
-                  <button className=" my-5 inline-flex w-full items-center justify-center gap-2 rounded-md border border-transparent bg-secondary px-4 py-3 text-sm font-semibold text-white transition-all hover:bg-opacity-70 focus:outline-none focus:ring-2 focus:ring-secondary focus:ring-offset-2 dark:focus:ring-offset-gray-800">
+                { !userApplicationsStatus &&  <button onClick={()=> apply({id:pet.id})} disabled={isApplicationLoading} className=" my-5 inline-flex w-full items-center justify-center gap-2 rounded-md border border-transparent bg-secondary px-4 py-3 text-sm font-semibold text-white transition-all hover:bg-opacity-70 focus:outline-none focus:ring-2 focus:ring-secondary focus:ring-offset-2 dark:focus:ring-offset-gray-800">
 Apply to adopt {pet.name}
-                  </button>
+                  </button>}
+                  { userApplicationsStatus==="PENDING" && <p className="text-xl text-amber-500 text-center">Your adoption application Pending</p>}
+                  { userApplicationsStatus==="ACCEPTED" && <p className="text-xl text-green-500 text-center">Your adoption application has been Accepted!</p>}
+                  { userApplicationsStatus==="REJECTED" && <p className="text-xl text-red-500 text-center">Your adoption application has been Rejected!</p>}
                   <p className="text-xl text-center"> Adoption process</p>
                   <ul className="flex flex-col gap-y-3">
                     <li className="flex flex-row gap-5">
@@ -193,7 +210,35 @@ Apply to adopt {pet.name}
                       <BsWhatsapp className="h-6 w-6" /> Chat with the owner
                     </a>
                   )}
-                </div>
+                </div>}
+                {isDonor && <div className="card-body w-full">
+                  <p className="text text-center text-xl">Adoption Applications</p>
+                
+                    {allApplications?.map(application=> (
+                        <div className=" w-full  flex flex-row items-center justify-between flex-wrap p-3 border border-base-200 shadow-md md:shadow-none rounded-md gap-2"      key={application.id}>
+              <Image
+         
+              alt={application.user.name ?? "Profile Pic"}
+              src={application?.user.image ?? "https://randomuser.me/api/portraits/lego/5.jpg"}
+              className="rounded-full h-10 w-10"
+              width={100}
+              height={100}
+              />
+              <p className="text-center">{application.user.name}</p>
+              {application.status==="ACCEPTED" && <p className="text-green-500">Accepted</p>}
+              {application.status==="REJECTED" && <p className="text-red-500">Rejected</p>}
+             { application.status==="PENDING" && <div className="gap-2 flex flex-row ">
+                <button disabled={isHandleDonationLoading} className="btn btn-sm bg-green-500 gap-2 text-xs capitalize" onClick={()=> handleDonation({id:application.id, status: "ACCEPTED", petId: pet.id})}> <IoMdCheckmarkCircleOutline className="h-4 w-4"/> Accept</button>
+                <button  disabled={isHandleDonationLoading} className="btn btn-sm bg-red-500 gap-2 text-xs capitalize" onClick={()=> handleDonation({id:application.id, status: "REJECTED", petId: pet.id})}> <ImCancelCircle className="h-4 w-4"/>Reject</button>
+
+              </div>}
+              </div>
+                    ))}
+                    
+
+
+                
+                  </div>}
               </div>
             </div>
           </div>
