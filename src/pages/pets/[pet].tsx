@@ -288,6 +288,7 @@ function PetId() {
                                   id: application.id,
                                   status: "ACCEPTED",
                                   petId: pet.id,
+                                  userId: application.userId
                                 }); e.preventDefault()}
                               }
                             >
@@ -303,6 +304,7 @@ function PetId() {
                                   id: application.id,
                                   status: "REJECTED",
                                   petId: pet.id,
+                                  userId: application.userId
                                 }) ; e.preventDefault() }
                               }
                             >

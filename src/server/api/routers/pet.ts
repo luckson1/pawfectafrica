@@ -538,7 +538,6 @@ select: {
     const userId = ctx.session.user.id;
     const pets = await ctx.prisma.pet.findMany({
       where: {
-        userId,
         deleted: false,
         isAdopted: false,
         Favorite: {
@@ -580,8 +579,8 @@ select: {
     return petsWithImageUrls;
   }),
 
-  acceptAdoptionApplication: protectedProcedure.input(z.object({status: z.enum(["ACCEPTED", "REJECTED"]), id:z.string(), petId: z.string()})).mutation(async({ctx, input})=> {
-    const userId=ctx.session.user.id
+  acceptAdoptionApplication: protectedProcedure.input(z.object({status: z.enum(["ACCEPTED", "REJECTED"]), id:z.string(), userId: z.string(), petId: z.string()})).mutation(async({ctx, input})=> {
+   
     const acceptedApplication= await ctx.prisma.adoptionInterest.update({
       where: {
        id: input.id
@@ -593,7 +592,7 @@ status: input.status
     })
     const adoption=await ctx.prisma.adoption.create({
       data: {
-        userId,
+        userId: input.userId,
         petId: input.petId
       }
     })
@@ -612,7 +611,6 @@ data: {
     const userId = ctx.session.user.id;
     const pets = await ctx.prisma.pet.findMany({
       where: {
-        userId,
         deleted: false,
         isAdopted: true,
         Adoption: {
