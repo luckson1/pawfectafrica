@@ -33,7 +33,9 @@ if(home) return (
         <TableLoading />
       </div>
     );
-  if (status === "unauthenticated" && !home && !auth) return <LoginCard />;
+  if (status === "unauthenticated" && !home && !auth) return   ( <div className='w-screen h-screen bg-base-100 flex justify-center items-center py-10'>
+  <LoginCard />
+    </div>)
  
   if (auth) return <>{children}</>;
 

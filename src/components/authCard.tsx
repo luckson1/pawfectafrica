@@ -6,6 +6,8 @@ import {  useForm } from "react-hook-form";
 import { ErrorMessage } from "@hookform/error-message";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import Image from "next/image";
+import { MdOutlineEmail } from "react-icons/md";
 const handleLogin= () =>  signIn("google", { callbackUrl: "/pets" })
 
 export const LoginCard = () => {
@@ -19,27 +21,29 @@ export const LoginCard = () => {
     });
 
   return (
-    <div className="items-center px-10 absolute left-0 right-0 top-20 ml-auto mr-auto flex h-fit w-96 max-w-sm card  flex-row justify-center   rounded-lg bg-secondary pb-7 pt-5 shadow-2xl  sm:top-28 md:w-6/12 md:gap-5 ">
-      <section className="  card-body justify-center items-center">
-        <div className="mb-5 flex w-72 flex-row gap-3">
-          <p className="mb-3 tracking-wider font-bold text-lg">Continue With:</p>
-        </div>
+    <div className="items-center   flex h-full w-full max-w-4xl max-h-[56rem] card  flex-col-reverse md:flex-row justify-center items center  rounded-2xl   shadow-2xl  ">
+      <div className="h-2/5 md:h-full w-full md:w-1/2 bg-accent p-5 rounded-br-xl rounded-bl-xl md:rounded-br-none md:rounded-tl-xl" > <Image src="/adopt.svg" height={600} width={600} className="w-full h-full"  alt="adopt a pet"/> </div>
+      <section className="  flex flex-col p-4 gap-2 justify-center items-center h-3/5 md:h-full w-full md:w-1/2 bg-base-100 rounded-tr-xl rounded-tl-xl md:rounded-tl-none md:rounded-br-xl">
+   
+          <p className=" tracking-wider text-center font-bold text-lg">Continue With:</p>
+     
 
-        <div className="flex flex-col w-full justify-center items-center gap-3">
-       <div className="flex flex-col gap-2 w-full">
+        <div className="flex flex-col w-full justify-center items-center gap-2">
+       <div className="flex flex-col gap-2 w-full justify-center items-center">
         <p>   Google</p>
         <button
           /* eslint-disable-next-line @typescript-eslint/no-misused-promises */ 
             onClick={handleLogin}
-            className=" btn btn-primary w-full max-w-xs flex justify-between flex-row "
+            className=" btn btn-primary btn-outline w-full max-w-xs gap-2 "
           >
+             <FcGoogle className="h-6 w-6" />
             <p className="tracking-[5px]">Google </p>
-            <FcGoogle size={"30px"} />
+           
           </button>
        </div>
       
           
-       <p className="tracking-wider font-bold text-lg">Or</p> 
+       <p className="tracking-wider font-bold text-lg mt-3">Or</p> 
 
         <form className=" flex flex-col w-full justify-center items-center" 
                 // eslint-disable-next-line @typescript-eslint/no-misused-promises
@@ -65,7 +69,7 @@ export const LoginCard = () => {
             />
           </label>
         </div>
-          <button className="btn btn-primary w-full max-w-xs">Continue With Email</button>
+          <button className="btn btn-primary w-full max-w-xs gap-2"> <MdOutlineEmail className="w-6 h-6"/>   <p className="tracking-[5px]">Email </p></button>
 
         </form>
         </div>
