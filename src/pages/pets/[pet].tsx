@@ -63,7 +63,7 @@ function PetId() {
     pet && pet.AdoptionInterest.filter((p) => p.userId === userId)
   )?.at(0)?.status;
 
-  const isDonor = (pet && pet.donor.id === userId) ?? false;
+  const isDonorView = (pet && pet.donor.id === userId) ?? false;
   const allApplications = pet?.AdoptionInterest.map((p) => p);
 
   if (isError && !isLoading) {
@@ -186,7 +186,7 @@ function PetId() {
             </div>
             <div className="flex h-[50%] w-full flex-col items-center justify-around  lg:h-full lg:w-[35%]">
               <div className=" card mx-auto my-auto   w-full max-w-xl rounded-lg bg-base-100 shadow-base-content lg:shadow-lg ">
-                {!isDonor && (
+                {!isDonorView && (
                   <div className="card-body w-full">
                     <p className="text-center text-2xl tracking-widest text-blue-700">
                       {pet.name}
@@ -252,7 +252,7 @@ function PetId() {
                     )}
                   </div>
                 )}
-                {isDonor && (
+                {isDonorView && (
                   <div className="card-body w-full">
                     <p className="text text-center text-xl">
                       Adoption Applications
@@ -276,7 +276,7 @@ function PetId() {
                           width={100}
                           height={100}
                         />
-                        <p className="text-center">{application.user.name}</p>
+                        <p className="text-center text-blue-500 underline">{application.user.name}</p>
                         {application.status === "ACCEPTED" && (
                           <p className="text-green-500">Accepted</p>
                         )}
