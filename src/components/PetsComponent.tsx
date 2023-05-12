@@ -38,7 +38,7 @@ const {mutate:addToFavourites}=api.user.addToFavourites.useMutation()
   }, [error, isError]);
   useEffect(() => {
     if (!isError && !isLoading) {
-      toast("If you like a pet, swipe right to add it to your favourites. Swipe left to remove the pet from the dashboard" ,{ duration: 6000 });
+      toast("If you like a pet, swipe right to add it to your favourites. Swipe left to remove the pet from the dashboard" ,{ duration: 10000 });
     }
   }, [isError, isLoading]);
 
