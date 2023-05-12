@@ -205,6 +205,9 @@ export const userRouter = createTRPCRouter({
         where: {
           id: input.userId,
         },
+        include: {
+          Preference: true
+        }
       });
       if (!user) {
         throw new TRPCError({ code: "NOT_FOUND" });
