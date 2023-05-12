@@ -121,8 +121,8 @@ addToFavourites({id})
       </div>
 
 
-      <div className="mx-auto flex h-[36rem] w-full max-w-xl flex-col mb-10">
-    
+      <div className="mx-auto flex h-[36rem] w-full max-w-xl flex-col mb-10 justify-center items-center shadow-2xl rounded-xl shadow-secondary/100">
+   <div  className="flex gap-3 flex-col justify-center items-center w-full">  <p className="text-xl  ">You are all caught up. View your favorite pets</p> <button className="pressable btn btn-secondary w-full max-w-xs" onClick={()=> router.push("/mypets")}>Favorite Pets</button></div>
         {pets?.map((pet) => (
           <TinderCard
             className=" absolute  h-[36rem] w-full max-w-xl "
