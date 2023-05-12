@@ -48,10 +48,15 @@ function PetId() {
   const { mutate: apply, isLoading: isApplicationLoading } =
     api.user.initiateAdoption.useMutation({
       onSuccess: () => toast.success("Application sent successfully"),
+      onSettled: ()=> ctx.pet.getOnePet.invalidate(),
       onError: (data) => toast.error(`An Error Occured: ${data.message}`),
     });
-  const { mutate: handleDonation, isLoading: isHandleDonationLoading } =
+  const { mutate: acceptApplication, isLoading: isAcceptanceLoading } =
     api.pet.acceptAdoptionApplication.useMutation({
+      onSettled: () => ctx.pet.getOnePet.invalidate(),
+    });
+    const { mutate: rejectApplication, isLoading: isRejectionLoading } =
+    api.pet.rejectAdoptionApplication.useMutation({
       onSettled: () => ctx.pet.getOnePet.invalidate(),
     });
   const userApplicationsStatus = (
@@ -281,15 +286,15 @@ function PetId() {
                         {application.status === "PENDING" && (
                           <div className="flex flex-row gap-2 ">
                             <button
-                              disabled={isHandleDonationLoading}
+                              disabled={isAcceptanceLoading || isRejectionLoading}
                               className="btn-sm btn gap-2 bg-green-500 text-xs capitalize"
                               onClick={(e) =>{
-                                handleDonation({
+                                acceptApplication({
                                   id: application.id,
                                   status: "ACCEPTED",
                                   petId: pet.id,
                                   userId: application.userId
-                                }); e.preventDefault()}
+                                }); e.stopPropagation()}
                               }
                             >
                               {" "}
@@ -297,15 +302,15 @@ function PetId() {
                               Accept
                             </button>
                             <button
-                              disabled={isHandleDonationLoading}
+                             disabled={isAcceptanceLoading || isRejectionLoading}
                               className="btn-sm btn gap-2 bg-red-500 text-xs capitalize"
                               onClick={(e) =>{
-                                handleDonation({
+                                rejectApplication({
                                   id: application.id,
                                   status: "REJECTED",
                                   petId: pet.id,
                                   userId: application.userId
-                                }) ; e.preventDefault() }
+                                }) ; e.stopPropagation() }
                               }
                             >
                               {" "}
