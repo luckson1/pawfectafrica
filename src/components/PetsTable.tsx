@@ -42,7 +42,7 @@ function PetsTable() {
   return (
     <div className="table text-left w-full">
       <ul className="responsive-table">
-      <li className="table-header md:rounded-md rounded-xl   my-5 md:my-2">
+      <li className="table-header md:rounded-md rounded-xl   my-5 md:my-2 bg-base-300">
           <div className="col col-1 text-left">Avatar</div>
           <div className="col col-1 text-left">Name</div>
           <div className="col col-1 text-left">Donor</div>
@@ -52,7 +52,7 @@ function PetsTable() {
         </li>
 
         {pets?.map((pet) => (
-            <li className="table-row md:rounded-md rounded-xl   my-5 md:my-2" key={pet.id}>
+            <li className="table-row md:rounded-md rounded-xl   my-5 md:my-2 bg-base-100" key={pet.id}>
             <div className="col col-1" data-label="Avatar">
               <Image
                 alt={pet.name ?? "Profile Pic"}
@@ -78,9 +78,10 @@ function PetsTable() {
                 src={
                   pet?.donor.image ?? "https://randomuser.me/api/portraits/lego/5.jpg"
                 }
-                className="ml-5 h-6 w-6 rounded-full"
+                className="ml-5 h-6 w-6 rounded-full cursor-pointer"
                 height={40}
                 width={40}
+                onClick={()=> router.push(`/users/id?id=${pet.donor.id}`)}
               />
             </div>
 
@@ -105,7 +106,7 @@ function PetsTable() {
                       className=" cursor-pointer h-6 w-6 rounded-full"
                         
                      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-                     onClick={()=> router.push(`/pets/id?id=${pet.user.id}`)}
+                     onClick={()=> router.push(`/users/id?id=${pet.user.id}`)}
                     />
                   ))}
               </div>

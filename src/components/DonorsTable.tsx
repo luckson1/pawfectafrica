@@ -45,7 +45,7 @@ function DonorsTable() {
   
         <div className="table text-left w-full">
           <ul className="responsive-table">
-          <li className="table-header md:rounded-md rounded-xl  my-5 md:my-2">
+          <li className="table-header md:rounded-md rounded-xl  my-5 md:my-2 bg-base-300">
               <div className="col col-1 text-left">Avatar</div>
               <div className="col col-3 text-left" >Name</div>
               <div className="col col-3 text-left" >Email</div>
@@ -54,14 +54,15 @@ function DonorsTable() {
             </li>
     
             {users?.map((user) => (
-              <li className="table-row md:rounded-md rounded-xl   my-5 md:my-2" key={user.id}>
+              <li className="table-row md:rounded-md rounded-xl   my-5 md:my-2 bg-base-100" key={user.id}>
                 <div className="col col-1" data-label="Avatar">
                   <Image
                     alt={user.name?? "Profile Pic"}
                     src={user?.image?? "https://randomuser.me/api/portraits/lego/5.jpg"}
-                    className="rounded-full h-6 w-6 ml-5"
+                    className="rounded-full h-6 w-6 cursor-pointer"
                     width={40}
                     height={40}
+                    onClick={()=> router.push(`/users/id?id=${user.id ?? ""}`)}
                  
                   />
                 </div>
