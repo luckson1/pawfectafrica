@@ -5,7 +5,6 @@ import TableLoading from "~/components/loading/TableLoading";
 import LoadingSkeleton from "~/components/loading/LoadingSkeletons";
 import { usePathname, useRouter } from "next/navigation";
 import { LoginCard } from "~/components/authCard";
-import DonorOnboarding from "../pages/donorOnboarding";
 import Onboarding from "../pages/onboarding";
 
 function Layout({ children }: { children: React.JSX.Element }) {
