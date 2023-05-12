@@ -125,7 +125,7 @@ addToFavourites({id})
    <div  className="flex gap-3 flex-col justify-center items-center w-full">  <p className="text-xl  ">You are all caught up. View your favorite pets</p> <button className="pressable btn btn-secondary w-full max-w-xs" onClick={()=> router.push("/mypets")}>Favorite Pets</button></div>
         {pets?.map((pet) => (
           <TinderCard
-            className=" absolute  h-[36rem] w-full max-w-xl "
+            className=" absolute h-[28rem] md:h-[36rem] w-full max-w-xl "
             key={pet.id}
             onSwipe={(dir) => swiped(dir, pet.id)}
             onCardLeftScreen={() => outOfFrame(pet.name)}
@@ -137,7 +137,7 @@ addToFavourites({id})
                     style={{
                       backgroundImage: `url(${pet.Image.at(0)?.url ?? ""})`,
                     }}
-                    className="card flex h-full w-full items-center justify-end bg-contain bg-accent bg-no-repeat py-10 shadow-2xl shadow-primary/100"
+                    className="card flex h-full w-full items-center justify-end bg-contain bg-base-100 bg-no-repeat py-10 shadow-2xl shadow-primary/100"
                   >
                     <button className="btn btn-primary w-full max-w-xs pressable" onClick={()=>router.push(`/pets/id?id=${pet.id}`)} onTouchStart={()=>router.push(`/pets?id=${pet.id}`)}>
                       Visit {pet.name}&apos;s Profile
