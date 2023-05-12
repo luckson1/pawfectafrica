@@ -36,6 +36,11 @@ const {mutate:addToFavourites}=api.user.addToFavourites.useMutation()
       toast.error(`${error.message}`, { duration: 6000 });
     }
   }, [error, isError]);
+  useEffect(() => {
+    if (!isError && !isLoading) {
+      toast("If you like a pet, swipe right to add it to your favourites. Swipe left to remove the pet from the dashboard" ,{ duration: 20000 });
+    }
+  }, [isError, isLoading]);
 
   const outOfFrame = function (name: string) {
     setRemovedPet(name);
@@ -103,28 +108,24 @@ addToFavourites({id})
   }
 
   return (
-    <div className="h-fit w-full flex flex-col  ">
+    <div className="h-full w-full flex flex-col  ">
       <Toaster position="top-right" reverseOrder={false} />
 
    
-          <div className="flex w-full flex-col my-5 gap-y-2 ">
-          <p className="mx-2 text-center">
-             This is a pet you could adopt? Swipe the card right.
-          </p>
-          {/* <p className="mx-5 text-center text-xl font-bold">Else</p> */}
-          <p className="mx-2 text-center">
-            Swipe left to remove the pet from the dashboard
-          </p>
-        {  removedPet && <p className="mx-2 text-center text-primary font-bold">
+
+          
+      <div className="h-6 w-full my-2">
+      {  removedPet && <p className="mx-2 text-center text-primary font-bold">
            {showInfo}
           </p>}
+      </div>
 
-        </div>
-      <div className="mx-auto flex h-[30rem] w-full max-w-xl flex-col mb-10">
+
+      <div className="mx-auto flex h-[36rem] w-full max-w-xl flex-col mb-10">
     
         {pets?.map((pet) => (
           <TinderCard
-            className=" absolute  h-[30rem] w-full max-w-xl pressable"
+            className=" absolute  h-[36rem] w-full max-w-xl "
             key={pet.id}
             onSwipe={(dir) => swiped(dir, pet.id)}
             onCardLeftScreen={() => outOfFrame(pet.name)}
@@ -138,7 +139,7 @@ addToFavourites({id})
                     }}
                     className="card flex h-full w-full items-center justify-end bg-contain bg-no-repeat py-10 shadow-2xl shadow-secondary/100"
                   >
-                    <button className="btn btn-secondary w-full max-w-xs" onClick={()=>router.push(`/pets/id?id=${pet.id}`)} onTouchStart={()=>router.push(`/pets?id=${pet.id}`)}>
+                    <button className="btn btn-secondary w-full max-w-xs pressable" onClick={()=>router.push(`/pets/id?id=${pet.id}`)} onTouchStart={()=>router.push(`/pets?id=${pet.id}`)}>
                       Visit {pet.name}&apos;s Profile
                     </button>
                   </div>
