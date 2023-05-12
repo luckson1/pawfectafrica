@@ -252,16 +252,16 @@ export const Nav = () => {
         >
           Rehome a pet
         </button>
-        <Image
+       { isAuthed && <Image
                     alt={data?.user.name?? "Profile Pic"}
                     src={data?.user?.image?? "https://randomuser.me/api/portraits/lego/5.jpg"}
                     className="rounded-full h-7 w-7 cursor-pointer"
                     width={40}
                     height={40}
                  onClick={()=> router.push(`/users/id?id=${userId ?? ""}`)}
-                  />
+                  />}
         <button
-          className="btn-ghost btn-sm btn gap-3 text-sm capitalize text-black"
+          className="btn-ghost btn-sm btn gap-3 text-sm capitalize"
           onClick={
             isAuthed
               ? () => signOut()
