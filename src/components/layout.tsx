@@ -19,7 +19,14 @@ function Layout({ children }: { children: React.JSX.Element }) {
   const admin = role === "ADMIN";
   const newUser = role === "USER";
 
-
+if(home) return (
+  <div>
+    <Nav />
+  <div className="mt-16">
+  {children}
+  </div>
+  </div>
+);
   if (status === "loading")
     return (
       <div className="h-screen w-screen flex justify-center items-center">
