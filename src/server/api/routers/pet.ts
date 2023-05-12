@@ -266,6 +266,7 @@ export const petRouter = createTRPCRouter({
     const pets = await ctx.prisma.pet.findMany({
       where: {
         deleted: false,
+        isAdopted: false
       },
       include: {
         Image: {
