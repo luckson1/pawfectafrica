@@ -24,7 +24,7 @@ const router=useRouter()
 
       const {mutate: createProfile, isLoading, isError, error }=api.user.createDonorProfile.useMutation({onSuccess: ()=>router.push("/addPet")})
   return (
-    <div className='w-screen h-screen bg-base-100 flex justify-center items-center '>
+    <div className='w-screen h-[calc(100vh-4rem)] bg-base-100 flex justify-center items-center '>
         <div className='card shadow-xl shadow-primary/100 w-full max-w-md h-full max-h-[40rem] flex justify-center items-center flex-col p-7'>
 <p className='text-xl'>Hi, Lets get the donation process started!</p>
 <form className=' flex flex-col gap-y-10 card-body w-full justify-center items-center' 
