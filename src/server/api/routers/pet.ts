@@ -208,33 +208,28 @@ export const petRouter = createTRPCRouter({
     return petsWithImageUrls;
   }),
   getAllUnadoptedPets: protectedProcedure.query(async ({ ctx }) => {
+    const userId=ctx.session.user.id
     const pets = await ctx.prisma.pet.findMany({
       where: {
         deleted: false,
-        isAdopted: false
+        isAdopted: false,
+        NOT: {
+          Favorite: {
+            some: {
+  userId
+            }
+          }
+        }
       },
-      include: {
+      select: {
+        id:true,
+        name:true,
         Image: {
           select: {
             id: true,
           },
         },
-        donor: {
-          select: {
-            id: true,
-            image: true,
-          },
-        },
-        Adoption: {
-          select: {
-            user: {
-              select: {
-                id: true,
-                image: true,
-              },
-            },
-          },
-        },
+      
       },
     });
     if (!pets) {
@@ -266,7 +261,7 @@ export const petRouter = createTRPCRouter({
     const pets = await ctx.prisma.pet.findMany({
       where: {
         deleted: false,
-        isAdopted: false
+        isAdopted: false,
       },
       include: {
         Image: {
@@ -304,21 +299,15 @@ export const petRouter = createTRPCRouter({
     );
     return petsWithImageUrls;
   }),
-  
+
   getOnePet: protectedProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {
-      const userId=ctx.session.user.id
       const pet = await ctx.prisma.pet.findFirstOrThrow({
         where: {
           id: input.id,
           deleted: false,
-          // AdoptionInterest : {
-          //   some: {
-          //    userId
-          //   }
-            
-          // }
+      
         },
         include: {
           Image: {
@@ -327,18 +316,18 @@ export const petRouter = createTRPCRouter({
             },
           },
           AdoptionInterest: {
-select: {
-  id: true,
-  userId: true,
-  status: true,
-  user: {
-select: {
-  id: true,
-  name: true,
-  image: true
-}
-  }
-}
+            select: {
+              id: true,
+              userId: true,
+              status: true,
+              user: {
+                select: {
+                  id: true,
+                  name: true,
+                  image: true,
+                },
+              },
+            },
           },
           donor: {
             select: {
@@ -570,7 +559,7 @@ select: {
                 Key: `${image.id}`,
               }),
             }))
-          ), 
+          ),
         };
 
         return petWithImageUrl;
@@ -579,34 +568,41 @@ select: {
     return petsWithImageUrls;
   }),
 
-  acceptAdoptionApplication: protectedProcedure.input(z.object({status: z.enum(["ACCEPTED", "REJECTED"]), id:z.string(), userId: z.string(), petId: z.string()})).mutation(async({ctx, input})=> {
-   
-    const acceptedApplication= await ctx.prisma.adoptionInterest.update({
-      where: {
-       id: input.id
+  acceptAdoptionApplication: protectedProcedure
+    .input(
+      z.object({
+        status: z.enum(["ACCEPTED", "REJECTED"]),
+        id: z.string(),
+        userId: z.string(),
+        petId: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const acceptedApplication = await ctx.prisma.adoptionInterest.update({
+        where: {
+          id: input.id,
+        },
+        data: {
+          status: input.status,
+        },
+      });
+      const adoption = await ctx.prisma.adoption.create({
+        data: {
+          userId: input.userId,
+          petId: input.petId,
+        },
+      });
+      const successfulAdoption = await ctx.prisma.pet.update({
+        where: {
+          id: input.petId,
+        },
 
-      },
-      data : {
-status: input.status
-      }
-    })
-    const adoption=await ctx.prisma.adoption.create({
-      data: {
-        userId: input.userId,
-        petId: input.petId
-      }
-    })
-    const successfulAdoption= await ctx.prisma.pet.update({
-where: {
-  id: input.petId,
-},
-
-data: {
-  isAdopted: true
-}
-    })
-    return {acceptedApplication, adoption, successfulAdoption}
-  }),
+        data: {
+          isAdopted: true,
+        },
+      });
+      return { acceptedApplication, adoption, successfulAdoption };
+    }),
   getUserAdoptedPets: protectedProcedure.query(async ({ ctx }) => {
     const userId = ctx.session.user.id;
     const pets = await ctx.prisma.pet.findMany({
