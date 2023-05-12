@@ -109,7 +109,7 @@ const images=watch("images")
     
     <div className="mb-2 mt-0  flex w-full max-full items-center justify-center rounded-md bg-base-100  md:mt-16">
       <Toaster position="top-right" reverseOrder={true} />
-      <div className="flex h-fit w-full flex-col rounded-md bg-base-100 bg-opacity-40 shadow-lg shadow-slate-500/100  max-w-4xl">
+      <div className="flex h-fit w-full flex-col rounded-md bg-base-100 bg-opacity-40 shadow-lg shadow-base-300/100  max-w-4xl">
         <p className="mt-4 text-center text-xl tracking-wider">Welcome, Let us know about the pet you are donating</p>
         <form
           className="flex h-fit w-full flex-row flex-wrap justify-around rounded-md px-5 py-10 md:px-10 md:py-16"

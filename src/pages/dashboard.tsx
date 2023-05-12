@@ -173,7 +173,7 @@ const DashCard = ({ title, cardValue, icon }: CardProps) => {
     <div className="card mx-auto my-3 h-32 w-full max-w-xs border border-base-300 bg-base-200 bg-opacity-50 shadow-sm md:my-5">
       <div className="card-body">
         <div className="flex flex-row items-center justify-between">
-          <p className="text font-semibold text-slate-500">{title}</p>
+          <p className="text font-semibold text-slate-500 darKtext-slate-200">{title}</p>
           {icon}
         </div>
         <p className="text-xl font-bold">{cardValue}</p>

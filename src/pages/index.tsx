@@ -65,7 +65,7 @@ const Home: NextPage = () => {
           <Toaster position="top-right" reverseOrder={false} />
           <div className=" flex h-full w-full flex-col-reverse lg:flex-row ">
             <div className="flex h-[60%] w-full flex-col items-center justify-around bg-base-100  md:h-[50%] lg:h-full lg:w-[40%]">
-              <p className="text-semi-bold text-start text-6xl text-slate-700 md:text-8xl">
+              <p className="text-semi-bold text-start text-6xl text-slate-700  dark:text-slate-300 md:text-8xl">
                 Ready to Adopt a 🐶 Pet ?
               </p>
               <button
@@ -88,7 +88,7 @@ const Home: NextPage = () => {
         </div>
 
         <div className="h-fit w-full bg-secondary bg-opacity-10 px-5  py-10 md:px-10 lg:px-20 ">
-          <p className="my-12 text-center text-4xl text-slate-900">
+          <p className="my-12 text-center text-4xl text-slate-900 dark:text-slate-300 ">
             Pets Availabe for Adoption
           </p>
         
@@ -130,7 +130,7 @@ const Home: NextPage = () => {
 
             <div className="flex flex-row flex-wrap justify-between">
               <div className="mt-6 flex flex-col items-center  gap-y-5 ">
-                <p className="mb-3 text-2xl font-semibold text-slate-700">
+                <p className="mb-3 text-2xl font-semibold text-slate-700 dark:text-slate-300 ">
                   Checklist for New Adopters
                 </p>
                 <p>Learn what you need to ensure adoption success</p>
@@ -145,7 +145,7 @@ const Home: NextPage = () => {
               </div>
 
               <div className="mt-6 flex flex-col items-center gap-y-5 ">
-                <p className="mb-3 text-2xl font-semibold text-slate-700">
+                <p className="mb-3 text-2xl font-semibold text-slate-700 dark:text-slate-300 ">
                   Adoption Process
                 </p>
                 <p>Get more information on the process of adopting a pet</p>
@@ -159,7 +159,7 @@ const Home: NextPage = () => {
                 </Link>
               </div>
               <div className="mt-6 flex flex-col items-center  gap-y-5 ">
-                <p className="mb-3 text-2xl font-semibold text-slate-700">
+                <p className="mb-3 text-2xl font-semibold text-slate-700 dark:text-slate-300 ">
                   Adoption FAQs
                 </p>
                 <p>Check what others frequently ask about</p>
