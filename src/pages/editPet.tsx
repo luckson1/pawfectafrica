@@ -350,20 +350,23 @@ const PetOnboarding = () => {
               </label>
             </div>
 
-            {isLoading ? (
-              <div className="form-control  mt-5 w-full max-w-xs">
+        <div className=" w-full flex justify-between items-center my-5">
+        {isLoading ? (
+              <div className="form-control   w-full max-w-xs">
                 <LoadingButton />
               </div>
             ) : (
-              <div className="form-control  mt-5 w-full max-w-xs">
+              <div className="form-control   w-full max-w-xs">
                 <button
                   type="submit"
-                  className="btn-primary btn my-5 w-full max-w-xs"
+                  className="btn-primary btn w-full max-w-xs"
                 >
                   Submit
                 </button>
               </div>
             )}
+<button className="btn btn-primary btn-outline w-full max-w-xs" onClick={()=> router.back()}> Cancel</button>
+        </div>
           </form>
         </div>
       </div>
