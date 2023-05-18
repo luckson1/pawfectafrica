@@ -9,8 +9,7 @@ import { api } from '~/utils/api';
 
 function DonorOnboarding() {
     const DonorSchema= z.object({
-        phoneNumber:z.string().regex(/^(+254|0)([17][0-9]|[1][0-1]){1}[0-9]{1}[0-9]{6}$/
-        ),
+      phoneNumber: z.string().regex(/^(?:\+254|0)[17]\d{8}$/),
         reason: z.string().min(10, {message: "too short"})
     })
 type DonorValues=z.infer<typeof DonorSchema>
