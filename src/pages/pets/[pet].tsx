@@ -32,6 +32,7 @@ function PetId() {
   }
   const [display, setDisplay] = useState(DisplayTypes.BIO);
   const [currentImage, setCurrentImage] = useState<PetImage>();
+
   const {
     data: pet,
     isLoading,
@@ -323,6 +324,7 @@ function PetId() {
                     ))}
                   </div>
                 )}
+                {isDonorView && <button className="btn btn-secondary w-full max-w-sm mx-auto my-5 " onClick={()=> router.push(`/editPet?id=${pet.id}`)}>Edit pet profile</button>}
               </div>
             </div>
           </div>
