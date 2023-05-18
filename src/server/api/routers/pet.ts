@@ -22,40 +22,22 @@ enum Type {
   CAT = "CAT",
   BIRD = "BIRD",
 }
-enum Gender {
-  MALE = "MALE",
-  FEMALE = "FEMALE",
-  NA = "NA",
-}
 
-enum Age {
-  BELOW_ONE = "BELOW_ONE",
-  ONE_TO_TWO = "ONE_TO_TWO",
-  TWO_TO_FIVE = "TWO_TO_FIVE",
-  OVER_FIVE = "OVER_FIVE",
-}
-enum CurrentPet {
-  NONE = "NONE",
-  CAT = "CAT",
-  DOG = "DOG",
-  BIRD = "BIRD",
-  ALL = "ALL",
-}
 export const petRouter = createTRPCRouter({
   createPetProfile: protectedProcedure
     .input(
       z.object({
-        name: z.string(),
-        breed: z.string(),
-        ageRange: z.nativeEnum(Age),
-        gender: z.nativeEnum(Gender),
-        type: z.nativeEnum(Type),
-        children: z.enum(["true", "false"]),
-        garden: z.enum(["true", "false"]),
-        active: z.enum(["true", "false"]),
-        description: z.string(),
-        petTorrelance: z.nativeEnum(CurrentPet),
-        neutered: z.enum(["true", "false"]),
+        name: z.string().min(1, { message: 'Name Required' }),
+        description: z.string().min(10, { message: 'Description too short' }),
+        neutered: z.enum(['true', 'false'], {errorMap: ()=> {return {message: "Please select one of the options"}}}),
+            breed: z.string().min(1, { message: 'Breed Required' }).nullable(),
+          ageRange: z.enum(["BELOW_ONE", "ONE_TO_TWO", "TWO_TO_FIVE", "OVER_FIVE"], {errorMap: ()=> {return {message: "Please select one of the options"}}}),
+          gender: z.enum(["MALE","FEMALE", "NA"], {errorMap: ()=> {return {message: "Please select one of the options"}}} ),
+          type: z.enum(["DOG","CAT","BIRD"],{errorMap: ()=> {return {message: "Please select one of the options"}}} ),
+          children: z.enum(['true', 'false'], {errorMap: ()=> {return {message: "Please select one of the options"}}}),
+          garden: z.enum(['true', 'false'], {errorMap: ()=> {return {message: "Please select one of the options"}}}),
+          active: z.enum(['true', 'false'], {errorMap: ()=> {return {message: "Please select one of the options"}}}),
+          petTorrelance: z.enum(["NONE", "CAT","DOG","BIRD", "ALL"], {errorMap: ()=> {return {message: "Please select one of the options"}}}),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -95,18 +77,18 @@ export const petRouter = createTRPCRouter({
   updatePetProfile: protectedProcedure
     .input(
       z.object({
-        name: z.string(),
-        breed: z.string(),
-        ageRange: z.nativeEnum(Age),
-        gender: z.nativeEnum(Gender),
-        type: z.nativeEnum(Type),
-        children: z.enum(["true", "false"]),
-        garden: z.enum(["true", "false"]),
-        active: z.enum(["true", "false"]),
-        description: z.string(),
-        petTorrelance: z.nativeEnum(CurrentPet),
-        id: z.string(),
-        neutered: z.enum(["true", "false"]),
+        name: z.string().min(1, { message: 'Name Required' }),
+        description: z.string().min(10, { message: 'Description too short' }),
+        neutered: z.enum(['true', 'false'], {errorMap: ()=> {return {message: "Please select one of the options"}}}),
+            breed: z.string().min(1, { message: 'Breed Required' }).nullable(),
+          ageRange: z.enum(["BELOW_ONE", "ONE_TO_TWO", "TWO_TO_FIVE", "OVER_FIVE"], {errorMap: ()=> {return {message: "Please select one of the options"}}}),
+          gender: z.enum(["MALE","FEMALE", "NA"], {errorMap: ()=> {return {message: "Please select one of the options"}}} ),
+          type: z.enum(["DOG","CAT","BIRD"],{errorMap: ()=> {return {message: "Please select one of the options"}}} ),
+          children: z.enum(['true', 'false'], {errorMap: ()=> {return {message: "Please select one of the options"}}}),
+          garden: z.enum(['true', 'false'], {errorMap: ()=> {return {message: "Please select one of the options"}}}),
+          active: z.enum(['true', 'false'], {errorMap: ()=> {return {message: "Please select one of the options"}}}),
+          petTorrelance: z.enum(["NONE", "CAT","DOG","BIRD", "ALL"], {errorMap: ()=> {return {message: "Please select one of the options"}}}),
+          id: z.string()
       })
     )
     .mutation(async ({ ctx, input }) => {

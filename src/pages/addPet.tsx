@@ -12,41 +12,19 @@ import { useRouter } from "next/navigation";
 import Dropzone from "~/components/Dropezone";
 import axios from "axios";
 import type { Pet } from "@prisma/client";
-enum CurrentPet {
-  NONE = "NONE",
-  CAT = "CAT",
-  DOG = "DOG",
-  BIRD = "BIRD",
-}
-enum Type {
-  DOG = "DOG",
-  CAT = "CAT",
-  BIRD = "BIRD",
-}
-enum Gender {
-  MALE = "MALE",
-  FEMALE = "FEMALE",
-  NA="NA"
-}
 
-enum Age {
-    BELOW_ONE="BELOW_ONE",
-    ONE_TO_TWO= "ONE_TO_TWO",
-    TWO_TO_FIVE="TWO_TO_FIVE",
-    OVER_FIVE="OVER_FIVE"
-}
 const PetSchema = z.object({
-name: z.string().min(1, { message: 'Name Required' }),
-description: z.string().min(10, { message: 'Description too short' }),
-neutered: z.enum(['true', 'false'], {errorMap: ()=> {return {message: "Please select one of the options"}}}),
-    breed: z.string().min(1, { message: 'Breed Required' }),
-  ageRange: z.nativeEnum(Age, {errorMap: ()=> {return {message: "Please select one of the options"}}}),
-  gender: z.nativeEnum(Gender, {errorMap: ()=> {return {message: "Please select one of the options"}}} ),
-  type: z.nativeEnum(Type,{errorMap: ()=> {return {message: "Please select one of the options"}}} ),
-  children: z.enum(['true', 'false'], {errorMap: ()=> {return {message: "Please select one of the options"}}}),
-  garden: z.enum(['true', 'false'], {errorMap: ()=> {return {message: "Please select one of the options"}}}),
-  active: z.enum(['true', 'false'], {errorMap: ()=> {return {message: "Please select one of the options"}}}),
-  petTorrelance: z.nativeEnum(CurrentPet, {errorMap: ()=> {return {message: "Please select one of the options"}}}),
+  name: z.string().min(1, { message: 'Name Required' }),
+  description: z.string().min(10, { message: 'Description too short' }),
+  neutered: z.enum(['true', 'false'], {errorMap: ()=> {return {message: "Please select one of the options"}}}),
+      breed: z.string().min(1, { message: 'Breed Required' }).nullable(),
+    ageRange: z.enum(["BELOW_ONE", "ONE_TO_TWO", "TWO_TO_FIVE", "OVER_FIVE"], {errorMap: ()=> {return {message: "Please select one of the options"}}}),
+    gender: z.enum(["MALE","FEMALE", "NA"], {errorMap: ()=> {return {message: "Please select one of the options"}}} ),
+    type: z.enum(["DOG","CAT","BIRD"],{errorMap: ()=> {return {message: "Please select one of the options"}}} ),
+    children: z.enum(['true', 'false'], {errorMap: ()=> {return {message: "Please select one of the options"}}}),
+    garden: z.enum(['true', 'false'], {errorMap: ()=> {return {message: "Please select one of the options"}}}),
+    active: z.enum(['true', 'false'], {errorMap: ()=> {return {message: "Please select one of the options"}}}),
+    petTorrelance: z.enum(["NONE", "CAT","DOG","BIRD", "ALL"], {errorMap: ()=> {return {message: "Please select one of the options"}}}),
   images: z.array(z.object({
     name: z.string().nonempty(),
     path: z.string().nonempty(),
