@@ -76,7 +76,7 @@ function UserId() {
                 display === DisplayTypes.PREFERENCES ? "tab-active" : ""
               }`}
             >
-              Donor
+           Pet Preferences
             </button>
          
           </div>
