@@ -105,8 +105,9 @@ const Home: NextPage = () => {
               <figure>  <Image
                   src={pet?.Image.at(0)?.url ?? ""}
                   alt={pet?.name}
-                  width={500}
-                  height={700}
+                  width={200}
+                  height={300}
+                  priority
               
                 
               
