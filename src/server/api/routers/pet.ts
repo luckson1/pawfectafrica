@@ -255,7 +255,7 @@ export const petRouter = createTRPCRouter({
       orderBy: {
         id: "desc",
       },
-      take: 6,
+      take: 8,
     });
     if (!pets) {
       throw new TRPCError({ code: "NOT_FOUND" });

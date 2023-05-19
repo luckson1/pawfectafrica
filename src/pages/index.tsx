@@ -6,6 +6,7 @@ import { api } from "~/utils/api";
 import { useRouter } from "next/navigation";
 import LoadingSkeleton from "~/components/loading/LoadingSkeletons";
 import { Toaster} from "react-hot-toast";
+import Image from "next/image";
 
 const Home: NextPage = () => {
   const router = useRouter();
@@ -92,7 +93,7 @@ const Home: NextPage = () => {
             Pets Availabe for Adoption
           </p>
         
-          <div className="grid lg:grid-cols-2 xl:grid-cols-3 gap-3 justify-center items-center w-full h-full min-h-[50vh]">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 md:gap-7 justify-center items-center w-full h-full min-h-[50vh]">
           {isLoading ? (
         skeletonData.map((item, index) => (
           <LoadingSkeleton key={index} />
@@ -100,10 +101,12 @@ const Home: NextPage = () => {
           ) : (
             pets?.map((pet) => (
          
-              <div className="card w-full max-w-sm glass"   key={pet?.id}>
-              <figure>  <img
+              <div className="card w-full max-h-[24rem] max-w-sm glass"   key={pet?.id}>
+              <figure>  <Image
                   src={pet?.Image.at(0)?.url ?? ""}
                   alt={pet?.name}
+                  width={500}
+                  height={700}
               
                 
               
