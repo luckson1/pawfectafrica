@@ -126,7 +126,7 @@ const Home: NextPage = () => {
    
         </div>
         </div>
-        <div className="h-[80vh] bg-base-100 ">
+        <div className="h-screen bg-base-100 ">
           <div className="px-5 md:px-10 lg:px-20">
             <p className="my-12 text-center text-3xl">
               Want to Adopt a Pet? Be in the Know
