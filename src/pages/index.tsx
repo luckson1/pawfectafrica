@@ -88,7 +88,7 @@ const Home: NextPage = () => {
           </div>
         </div>
 
-        <div className="h-fit w-full bg-accent px-5  py-10 md:px-10 lg:px-20 ">
+        <div className="h-fit w-full bg-secondary bg-opacity-5 px-5  py-10 md:px-10 lg:px-20 ">
           <p className="my-12 text-center text-4xl text-slate-900 dark:text-slate-300 ">
             Pets Availabe for Adoption
           </p>
@@ -113,7 +113,7 @@ const Home: NextPage = () => {
               
                 /></figure>
               <div className="card-body">
-                <h2 className="text-xl text-center">{pet?.name}</h2>
+                <h2 className="text-xl text-center dark:text-slate-100">{pet?.name}</h2>
                 <button className="btn btn-secondary"    onClick={() => {
       router.push(`/pets/id?id=${pet.id}`);
          
@@ -126,13 +126,13 @@ const Home: NextPage = () => {
    
         </div>
         </div>
-        <div className="h-screen bg-base-100 ">
-          <div className="px-5 md:px-10 lg:px-20">
+        <div className="h-fit bg-base-100 ">
+          <div className="px-5 md:px-10 lg:px-20 bg-base-100 h-screen flex  items-center justify-center flex-col">
             <p className="my-12 text-center text-3xl">
               Want to Adopt a Pet? Be in the Know
             </p>
 
-            <div className="flex flex-row flex-wrap justify-between">
+            <div className="flex flex-row flex-wrap justify-between w-full">
               <div className="mt-6 flex flex-col items-center  gap-y-5 ">
                 <p className="mb-3 text-2xl font-semibold text-slate-700 dark:text-slate-300 ">
                   Checklist for New Adopters
