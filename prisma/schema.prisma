@@ -96,13 +96,16 @@ model AdoptionInterest {
     status Status @default(PENDING)
     userId String
     petId  String
-      @@unique([userId, petId])
+
+    @@unique([userId, petId])
 }
- enum Status {
+
+enum Status {
     PENDING
     ACCEPTED
     REJECTED
- }
+}
+
 model Preference {
     id          String     @id @default(cuid())
     user        User       @relation(fields: [userId], references: [id])
@@ -123,7 +126,6 @@ model DonorProfile {
     phoneNumber String
     reason      String
     userId      String
-    
 }
 
 model Favorite {
@@ -132,7 +134,8 @@ model Favorite {
     userId String
     pet    Pet    @relation(fields: [petId], references: [id])
     petId  String
-      @@unique([userId, petId])
+
+    @@unique([userId, petId])
 }
 
 model Adoption {
@@ -141,7 +144,8 @@ model Adoption {
     userId String
     pet    Pet    @relation(fields: [petId], references: [id])
     petId  String
-      @@unique([userId, petId])
+
+    @@unique([userId, petId])
 }
 
 model Pet {
@@ -159,6 +163,8 @@ model Pet {
     isAdopted      Boolean    @default(false)
     isNeutered     Boolean
     deleted        Boolean    @default(false)
+    background     String     @default("NA")
+    idealHome      String     @default("NA")
     petTorrelance  CurrentPet
 
     donor            User               @relation(fields: [userId], references: [id])

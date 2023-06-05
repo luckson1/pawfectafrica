@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-
+import Select from 'react-select';
 import { ErrorMessage } from "@hookform/error-message";
 import { z } from "zod";
 import { api } from "~/utils/api";
@@ -9,11 +9,13 @@ import LoadingButton from "~/components/loading/LoadingButton";
 import { useSession } from "next-auth/react";
 import { Toaster } from "react-hot-toast";
 import { useRouter, useSearchParams } from "next/navigation";
-import Select from "react-select/dist/declarations/src/Select";
+
 
 const PetSchema = z.object({
   name: z.string().min(1, { message: "Name Required" }),
   description: z.string().min(10, { message: "Description too short" }),
+  idealHome: z.string().min(10, { message: 'idealHome too short' }),
+  background: z.string().min(10, { message: "backround too short" }),
   neutered: z.enum(["true", "false"], {
     errorMap: () => {
       return { message: "Please select one of the options" };
@@ -50,18 +52,64 @@ const PetSchema = z.object({
       return { message: "Please select one of the options" };
     },
   }),
-  torrelance: z.array(z.object({value:z.enum(["NONE", "CAT","DOG","BIRD", "ALL"]), label:z.string() }), {errorMap: ()=> {return {message: "Please select one of the options"}}}).nonempty(),
+  torrelance: z
+    .array(
+      z.object({
+        value: z.enum(["NONE", "CAT", "DOG", "BIRD", "ALL"]),
+        label: z.string(),
+      }),
+      {
+        errorMap: () => {
+          return { message: "Please select one of the options" };
+        },
+      }
+    )
+   
 });
-
+// const  tt=z.array(
+//   z.object({
+//     value: z.enum(["NONE", "CAT", "DOG", "BIRD", "ALL"]),
+//     label: z.string(),
+//   }))
+// type t=z.infer<typeof tt>
 export type PetValues = z.infer<typeof PetSchema>;
 const PetOnboarding = () => {
   const params = useSearchParams();
   const id = params.get("id") ?? "";
-  const { data: pet } = api.pet.getOnePet.useQuery({ id });
+  const options : PetValues['torrelance'] = [
+    { value: "DOG", label: "Dogs" },
+    { value: "CAT", label: "Cats" },
+    { value: "BIRD", label: "Birds" },
+    { value: "NONE", label: "Not socialized to other pet" },
+  ];
+  const { data: pet } = api.pet.getOnePet.useQuery({ id }, {
+    onSuccess: (pet)=> {
+    const t=pet.petTorrelance === "ALL"
+    ? [options[0]!, options[1]!, options[2]!]
+    : pet.petTorrelance === "NONE"
+    ? [options[3]!]
+    : pet.petTorrelance === "DOG"
+    ? [options[0]!]
+    : pet.petTorrelance === "CAT"
+    ? [options[1]!]
+    : pet.petTorrelance === "BIRD"
+    ? [options[2]!]
+    : pet.petTorrelance === "DOG_CAT"
+    ? [options[0]!, options[1]!]
+    : pet.petTorrelance === "DOG_BIRD"
+    ? [options[0]!, options[2]!]
+    : pet.petTorrelance === "CAT_BIRD"
+    ? [options[1]!, options[2]!]
+    : [options[3]!]
+setValue('torrelance', t)
+    }
+  });
 
   const {
     register,
+    setValue,
     control,
+    watch,
     handleSubmit,
     formState: { errors },
   } = useForm<PetValues>({
@@ -69,6 +117,8 @@ const PetOnboarding = () => {
     defaultValues: {
       name: pet?.name,
       description: pet?.description,
+      background: pet?.background,
+      idealHome: pet?.idealHome,
       neutered: pet?.isNeutered ? "true" : "false",
       breed: pet?.breed,
       ageRange: pet?.ageRange,
@@ -77,20 +127,21 @@ const PetOnboarding = () => {
       children: pet?.isChildrenSafe ? "true" : "false",
       garden: pet?.isNeedGarden ? "true" : "false",
       active: pet?.isActive ? "true" : "false",
-  
+ 
+        
     },
   });
   const { data } = useSession();
   const userRole = data?.user?.role;
   const isOnboarded = userRole === "DONOR" || userRole === "ADMIN";
-
+const ll=watch('torrelance')
   const router = useRouter();
   useEffect(() => {
     if (!isOnboarded) router.push("/donorOnboarding");
   }, [isOnboarded, router]);
 
   const { mutate: edit, isLoading } = api.pet.updatePetProfile.useMutation({
-    onSuccess: (pet)=> router.push( `/pets/id?id=${pet.id}`)
+    onSuccess: (pet) => router.push(`/pets/id?id=${pet.id}`),
   });
 
   const onSubmit = handleSubmit((data) => {
@@ -103,7 +154,7 @@ const PetOnboarding = () => {
         <Toaster position="top-right" reverseOrder={true} />
         <div className="flex h-fit w-full max-w-4xl flex-col rounded-md bg-base-100 bg-opacity-40 shadow-lg  shadow-base-300/100">
           <p className="mt-4 text-center text-xl tracking-wider">
-            Edit Pet Profile
+            Welcome, Let us know about the pet you are rehoming
           </p>
           <form
             className="flex h-fit w-full flex-row flex-wrap justify-around rounded-md px-5 py-10 md:px-10 md:py-16"
@@ -113,7 +164,7 @@ const PetOnboarding = () => {
             <div className="form-control mt-5 w-full max-w-xs">
               <label className="label">
                 <span className="label-text">
-                  What type of pet are you donating?
+                  What type of pet are you rehoming?
                 </span>
               </label>
               <select className="select-bordered  select" {...register("type")}>
@@ -195,13 +246,13 @@ const PetOnboarding = () => {
 
             <div className="form-control mt-5 w-full max-w-xs">
               <label className="label">
-                <span className="label-text">How old should is the pet?</span>
+                <span className="label-text">How old is the pet?</span>
               </label>
               <select
                 className="select-bordered  select"
                 {...register("ageRange")}
               >
-                <option value="">Select pet</option>
+                <option value="">Select pet age</option>
                 <option value="BELOW_ONE">below 1 year</option>
                 <option value="ONE_TO_TWO">1-2 years</option>
                 <option value="TWO-TOFIVE">2-5 years</option>
@@ -215,8 +266,42 @@ const PetOnboarding = () => {
                 className="text-red-600"
               />
             </div>
-
+            <div className="form-control w-full max-w-xs mt-5">
+            <label className="label">
+              <span className="label-text">
+              Which animals is your pet  socialised with? 
+              </span>
+            </label>
+            <Controller
+        name="torrelance"
+        control={control}
+        render={({ field }) => (
+          <Select
+            {...field}
+          
+            isMulti
+            className="w-full max-w-xs"
+            classNamePrefix="py-0.5 border-slate-100"
+            value={field.value}
+            options={[
+              { value: 'DOG', label: 'Dogs' },
+              { value: 'CAT', label: 'Cats' },
+              { value: 'BIRD', label: 'Birds' },
+              { value: 'NONE', label: 'Not socialized to other pet' },
+            ]}
+          />
+        )}
+      />
            
+          
+            <label className="label"></label>
+            <ErrorMessage
+              errors={errors}
+              name="torrelance"
+              as="h5"
+              className="text-red-600"
+            />
+          </div>
             <div className="form-control mt-5 w-full max-w-xs">
               <label className="label">
                 <span className="label-text">
@@ -293,7 +378,7 @@ const PetOnboarding = () => {
               >
                 <option value="">How active is the pet</option>
                 <option value="true">Very active</option>
-                <option value="false">Not very, just walks</option>
+                <option value="false">Not so active</option>
               </select>
               <label className="label"></label>
               <ErrorMessage
@@ -323,24 +408,60 @@ const PetOnboarding = () => {
                 />
               </label>
             </div>
-
-        <div className=" w-full flex justify-between items-center my-5">
-        {isLoading ? (
-              <div className="form-control   w-full max-w-xs">
+            <div className="form-control w-full max-w-xs ">
+              <label className="label">
+                <span className="label-text">Pet Background?</span>
+              </label>
+              <textarea
+                className="textarea-bordered  textarea h-28"
+                placeholder="Pet background"
+                id="background"
+                {...register("background")}
+              ></textarea>
+              <label className="label">
+                {/* errors */}
+                <ErrorMessage
+                  errors={errors}
+                  name="background"
+                  as="h5"
+                  className="text-red-600"
+                />
+              </label>
+            </div>
+            <div className="form-control w-full max-w-xs ">
+              <label className="label">
+                <span className="label-text">Pet Character?</span>
+              </label>
+              <textarea
+                className="textarea-bordered  textarea h-28"
+                placeholder="Pet idealHome"
+                id="idealHome"
+                {...register("idealHome")}
+              ></textarea>
+              <label className="label">
+                {/* errors */}
+                <ErrorMessage
+                  errors={errors}
+                  name="idealHome"
+                  as="h5"
+                  className="text-red-600"
+                />
+              </label>
+            </div>
+            {isLoading ? (
+              <div className="form-control  mt-5 w-full max-w-xs">
                 <LoadingButton />
               </div>
             ) : (
-              <div className="form-control   w-full max-w-xs">
+              <div className="form-control  mt-5 w-full max-w-xs">
                 <button
                   type="submit"
-                  className="btn-primary btn w-full max-w-xs"
+                  className="btn-primary btn my-5 w-full max-w-xs"
                 >
                   Submit
                 </button>
               </div>
             )}
-<button className="btn btn-primary btn-outline w-full max-w-xs" onClick={()=> router.back()}> Cancel</button>
-        </div>
           </form>
         </div>
       </div>

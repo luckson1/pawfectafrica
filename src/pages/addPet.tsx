@@ -16,6 +16,8 @@ import type { Pet } from "@prisma/client";
 const PetSchema = z.object({
   name: z.string().min(1, { message: 'Name Required' }),
   description: z.string().min(10, { message: 'Description too short' }),
+  background: z.string().min(10, { message: "backround too short" }),
+  idealHome: z.string().min(10, { message: "idealHome too short" }),
   neutered: z.enum(['true', 'false'], {errorMap: ()=> {return {message: "Please select one of the options"}}}),
       breed: z.string().min(1, { message: 'Breed Required' }).nullable(),
     ageRange: z.enum(["BELOW_ONE", "ONE_TO_TWO", "TWO_TO_FIVE", "OVER_FIVE"], {errorMap: ()=> {return {message: "Please select one of the options"}}}),
@@ -24,7 +26,7 @@ const PetSchema = z.object({
     children: z.enum(['true', 'false'], {errorMap: ()=> {return {message: "Please select one of the options"}}}),
     garden: z.enum(['true', 'false'], {errorMap: ()=> {return {message: "Please select one of the options"}}}),
     active: z.enum(['true', 'false'], {errorMap: ()=> {return {message: "Please select one of the options"}}}),
-    torrelance: z.array(z.object({value:z.enum(["NONE", "CAT","DOG","BIRD", "ALL"]), label:z.string() }), {errorMap: ()=> {return {message: "Please select one of the options"}}}).nonempty(),
+    torrelance: z.array(z.object({value:z.enum(["NONE", "CAT","DOG","BIRD", "ALL"]), label:z.string() }), {errorMap: ()=> {return {message: "Please select one of the options"}}}),
   images: z.array(z.object({
     name: z.string().nonempty(),
     path: z.string().nonempty(),
@@ -192,7 +194,7 @@ const images=watch("images")
           <div className="form-control w-full max-w-xs mt-5">
             <label className="label">
               <span className="label-text">
-              Which animals is your animal NOT social or friendly to? 
+              Which animals is your pet  socialised with? 
               </span>
             </label>
             <Controller
@@ -318,12 +320,12 @@ const images=watch("images")
           </div>
           <div className="form-control w-full max-w-xs ">
               <label className="label">
-                <span className="label-text">Pet Description?</span>
+                <span className="label-text">Pet Character?</span>
               </label>
               <textarea
                 className="textarea-bordered  textarea h-28"
                 placeholder="Pet Bio"
-                id="description"
+                id="character"
                 {...register("description")}
               ></textarea>
               <label className="label">
@@ -331,6 +333,46 @@ const images=watch("images")
                 <ErrorMessage
                   errors={errors}
                   name="description"
+                  as="h5"
+                  className="text-red-600"
+                />
+              </label>
+            </div>
+            <div className="form-control w-full max-w-xs ">
+              <label className="label">
+                <span className="label-text">Pet Background?</span>
+              </label>
+              <textarea
+                className="textarea-bordered  textarea h-28"
+                placeholder="Pet background"
+                id="background"
+                {...register("background")}
+              ></textarea>
+              <label className="label">
+                {/* errors */}
+                <ErrorMessage
+                  errors={errors}
+                  name="background"
+                  as="h5"
+                  className="text-red-600"
+                />
+              </label>
+            </div>
+            <div className="form-control w-full max-w-xs ">
+              <label className="label">
+                <span className="label-text">Pet Character?</span>
+              </label>
+              <textarea
+                className="textarea-bordered  textarea h-28"
+                placeholder="Pet idealHome"
+                id="idealHome"
+                {...register("idealHome")}
+              ></textarea>
+              <label className="label">
+                {/* errors */}
+                <ErrorMessage
+                  errors={errors}
+                  name="idealHome"
                   as="h5"
                   className="text-red-600"
                 />

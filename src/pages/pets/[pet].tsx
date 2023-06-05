@@ -353,7 +353,7 @@ function PetId() {
                 display === DisplayTypes.BIO ? "tab-active" : ""
               }`}
             >
-              Bio
+            Bio
             </button>
             <button
               onClick={() => setDisplay(DisplayTypes.DONOR)}
@@ -371,6 +371,8 @@ function PetId() {
             >
               Health
             </button>
+            
+          
           </div>
           {display === DisplayTypes.BIO && (
             <div className=" flex flex-col gap-5">
@@ -421,32 +423,42 @@ function PetId() {
               <div className="mt-2 flex flex-row gap-5">
                 <p className="h2 text-lg font-bold">
                   {" "}
-                  Not socialised to pets, such as:{" "}
+                  Socialised to pets, such as:
                 </p>
 
                 <p>
                   {" "}
                   {pet.petTorrelance === "BIRD"
-                    ? "Birds"
+                    ? "Birds Only"
                     : pet.petTorrelance === "CAT"
-                    ? "Cats"
+                    ? "Cats Only"
                     : pet.petTorrelance === "DOG"
-                    ? "Dogs"
+                    ? "Dogs Only"
                     : pet.petTorrelance === "CAT_BIRD"
-                    ? "Cats and birds"
+                    ? "Cats and birds Only"
                     : pet.petTorrelance === "DOG_BIRD"
-                    ? "Dogs and birds"
+                    ? "Dogs and birds Only"
                     : pet.petTorrelance === "DOG_CAT"
-                    ? "Dogs and cats"
-                    : pet.petTorrelance === "NONE"
+                    ? "Dogs and cats Only"
+                    : pet.petTorrelance === "ALL"
                     ? "Friendly to all Pets"
                     : "Not friendly to any other pets"}
                 </p>
               </div>
               <div className="mt-2 flex flex-row gap-5">
-                <p className="h2 text-lg font-bold"> Bio: </p>
+                <p className="h2 text-lg font-bold"> Character: </p>
 
                 <p> {pet.description}</p>
+              </div>
+              <div className="mt-2 flex flex-row gap-5">
+                <p className="h2 text-lg font-bold"> Background: </p>
+
+                <p> {pet.background}</p>
+              </div>
+              <div className="mt-2 flex flex-row gap-5">
+                <p className="h2 text-lg font-bold"> Ideal Home: </p>
+
+                <p> {pet.idealHome}</p>
               </div>
             </div>
           )}
