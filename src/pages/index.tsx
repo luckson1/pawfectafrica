@@ -139,7 +139,7 @@ const Home: NextPage = () => {
                 </p>
                 <p>Learn what you need to ensure adoption success</p>
                 <Link
-                  href="https://tnrtrust.org/news/"
+                  href="https://tnrtrust.org/checklist-for-new-adopters/"
                   target="_blank"
                   rel="noreferrer"
                   className="btn-outline btn-primary btn px-4"
@@ -154,7 +154,7 @@ const Home: NextPage = () => {
                 </p>
                 <p>Get more information on the process of adopting a pet</p>
                 <Link
-                  href="https://tnrtrust.org/news/"
+                  href="https://tnrtrust.org/pets-up-for-adoption/"
                   target="_blank"
                   rel="noreferrer"
                   className="btn-outline btn-primary btn px-4"
@@ -271,7 +271,7 @@ const Home: NextPage = () => {
                   <ul className="list-reset mb-6">
                     <li className="mr-2 mt-2 inline-block md:mr-0 md:block">
                       <Link
-                        href="/"
+                        href="https://www.facebook.com/tnrtrustnairobi/"
                         className="text-gray-900 no-underline hover:text-pink-500   hover:underline"
                       >
                         Facebook
@@ -279,18 +279,19 @@ const Home: NextPage = () => {
                     </li>
                     <li className="mr-2 mt-2 inline-block md:mr-0 md:block">
                       <Link
-                        href="/"
+                        href="https://twitter.com/tnrtrust"
                         className="text-gray-900 no-underline hover:text-pink-500   hover:underline"
                       >
-                        Linkedin
+                     Twitter
                       </Link>
                     </li>
                     <li className="mr-2 mt-2 inline-block md:mr-0 md:block">
                       <Link
-                        href="/"
+                        href="https://www.instagram.com/tnrtrustnairobiofficial/"
                         className="text-gray-900 no-underline hover:text-pink-500   hover:underline"
                       >
-                        Twitter
+                           Instagram
+                      
                       </Link>
                     </li>
                   </ul>
@@ -308,7 +309,7 @@ const Home: NextPage = () => {
                     </li>
                     <li className="mr-2 mt-2 inline-block md:mr-0 md:block">
                       <Link
-                        href="/"
+                        href="https://tnrtrust.org/contact-us/"
                         className="text-gray-900 no-underline hover:text-pink-500   hover:underline"
                       >
                         About Us
@@ -316,7 +317,7 @@ const Home: NextPage = () => {
                     </li>
                     <li className="mr-2 mt-2 inline-block md:mr-0 md:block">
                       <Link
-                        href="/"
+                        href="https://tnrtrust.org/contact-us/"
                         className="text-gray-900 no-underline hover:text-pink-500   hover:underline"
                       >
                         Contact
