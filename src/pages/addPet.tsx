@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { Controller, useController, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-
+import Select from 'react-select';
 import { ErrorMessage } from "@hookform/error-message";
 import { z } from "zod";
 import { api } from "~/utils/api";
@@ -24,7 +24,7 @@ const PetSchema = z.object({
     children: z.enum(['true', 'false'], {errorMap: ()=> {return {message: "Please select one of the options"}}}),
     garden: z.enum(['true', 'false'], {errorMap: ()=> {return {message: "Please select one of the options"}}}),
     active: z.enum(['true', 'false'], {errorMap: ()=> {return {message: "Please select one of the options"}}}),
-    petTorrelance: z.enum(["NONE", "CAT","DOG","BIRD", "ALL"], {errorMap: ()=> {return {message: "Please select one of the options"}}}),
+    torrelance: z.array(z.object({value:z.enum(["NONE", "CAT","DOG","BIRD", "ALL"]), label:z.string() }), {errorMap: ()=> {return {message: "Please select one of the options"}}}).nonempty(),
   images: z.array(z.object({
     name: z.string().nonempty(),
     path: z.string().nonempty(),
@@ -78,6 +78,7 @@ const images=watch("images")
     onSuccess: async(data) => {await uploadToS3(data); router.push("/pets")},
   });
 
+
   const onSubmit = handleSubmit((data) => {
     onboarding(data);
   });
@@ -88,7 +89,7 @@ const images=watch("images")
     <div className="mb-2 mt-0  flex w-full max-full items-center justify-center rounded-md bg-base-100  md:mt-16">
       <Toaster position="top-right" reverseOrder={true} />
       <div className="flex h-fit w-full flex-col rounded-md bg-base-100 bg-opacity-40 shadow-lg shadow-base-300/100  max-w-4xl">
-        <p className="mt-4 text-center text-xl tracking-wider">Welcome, Let us know about the pet you are donating</p>
+        <p className="mt-4 text-center text-xl tracking-wider">Welcome, Let us know about the pet you are rehoming</p>
         <form
           className="flex h-fit w-full flex-row flex-wrap justify-around rounded-md px-5 py-10 md:px-10 md:py-16"
             // eslint-disable-next-line @typescript-eslint/no-misused-promises
@@ -97,7 +98,7 @@ const images=watch("images")
           <div className="form-control w-full max-w-xs mt-5">
             <label className="label">
               <span className="label-text">
-                What type of pet are you donating?
+                What type of pet are you rehoming?
               </span>
             </label>
             <select className="select-bordered  select" {...register("type")}>
@@ -166,14 +167,14 @@ const images=watch("images")
           <div className="form-control w-full max-w-xs mt-5">
             <label className="label">
               <span className="label-text">
-               How old should is the pet?
+               How old  is the pet?
               </span>
             </label>
             <select
               className="select-bordered  select"
               {...register("ageRange")}
             >
-              <option value="">Select pet</option>
+              <option value="">Select pet age</option>
               <option value="BELOW_ONE">below 1 year</option>
               <option value="ONE_TO_TWO">1-2 years</option>
               <option value="TWO-TOFIVE">2-5 years</option>
@@ -191,24 +192,34 @@ const images=watch("images")
           <div className="form-control w-full max-w-xs mt-5">
             <label className="label">
               <span className="label-text">
-            Which animal does your pet dislike or threaten?
+              Which animals is your animal NOT social or friendly to? 
               </span>
             </label>
-            <select
-              className="select-bordered  select"
-              {...register("petTorrelance")}
-            >
-              <option value="">Select pet</option>
-              <option value="DOG">Dog</option>
-              <option value="CAT">Cat</option>
-              <option value="BIRD">bird</option>
-              <option value="ALL">All the above</option>
-              <option value="NONE">I currently dont own a pet</option>
-            </select>
+            <Controller
+        name="torrelance"
+        control={control}
+        render={({ field }) => (
+          <Select
+            {...field}
+            isMulti
+            className="w-full max-w-xs"
+            classNamePrefix="py-0.5 border-slate-100"
+            value={field.value}
+            options={[
+              { value: 'DOG', label: 'Dogs' },
+              { value: 'CAT', label: 'Cats' },
+              { value: 'BIRD', label: 'Birds' },
+              { value: 'NONE', label: 'Not socialized to other pet' },
+            ]}
+          />
+        )}
+      />
+           
+          
             <label className="label"></label>
             <ErrorMessage
               errors={errors}
-              name="petTorrelance"
+              name="torrelance"
               as="h5"
               className="text-red-600"
             />
@@ -294,7 +305,7 @@ const images=watch("images")
             >
               <option value="">How active is the pet</option>
               <option value="true">Very active</option>
-              <option value="false">Not very, just walks</option>
+              <option value="false">Not so active</option>
           
             </select>
             <label className="label"></label>

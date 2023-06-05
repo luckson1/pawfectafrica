@@ -37,7 +37,7 @@ export const petRouter = createTRPCRouter({
           children: z.enum(['true', 'false'], {errorMap: ()=> {return {message: "Please select one of the options"}}}),
           garden: z.enum(['true', 'false'], {errorMap: ()=> {return {message: "Please select one of the options"}}}),
           active: z.enum(['true', 'false'], {errorMap: ()=> {return {message: "Please select one of the options"}}}),
-          petTorrelance: z.enum(["NONE", "CAT","DOG","BIRD", "ALL"], {errorMap: ()=> {return {message: "Please select one of the options"}}}),
+          torrelance: z.array(z.object({value:z.enum(["NONE", "CAT","DOG","BIRD", "ALL"]), label:z.string() }), {errorMap: ()=> {return {message: "Please select one of the options"}}}),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -52,9 +52,21 @@ export const petRouter = createTRPCRouter({
         garden,
         active,
         description,
-        petTorrelance,
+        torrelance,
         neutered,
       } = input;
+      const getTorrelance= () => {
+        let petTorrelance:"DOG_CAT" | "DOG"| "CAT"| "BIRD" | "NONE" | "ALL" | "CAT_BIRD" | "DOG_BIRD" ;
+      if(torrelance.some(obj=> obj.value==='NONE')){ petTorrelance="NONE"}else if(torrelance.length===1 && torrelance.some(obj=> obj.value==='DOG')) { petTorrelance="DOG"}
+      else if(torrelance.length===1 && torrelance.some(obj=> obj.value==='CAT')) { petTorrelance="CAT"}
+      else if(torrelance.length===1 && torrelance.some(obj=> obj.value==='BIRD')) { petTorrelance="BIRD"}
+      else if(torrelance.length===3 && torrelance.some(obj=> obj.value!=='NONE'))  {petTorrelance="ALL"}
+     else  if(torrelance.length==2 && torrelance.some(obj=> obj.value==='BIRD') && torrelance.some(obj=> obj.value==='CAT'))  {petTorrelance="CAT_BIRD"}
+      else if(torrelance.length==2 && torrelance.some(obj=> obj.value==='BIRD') && torrelance.some(obj=> obj.value==='DOG')) { petTorrelance="DOG_BIRD"}
+      else if(torrelance.length==2 && torrelance.some(obj=> obj.value==='DOG') && torrelance.some(obj=> obj.value==='CAT')) { petTorrelance="DOG_CAT"} else {petTorrelance="NONE"}
+    return petTorrelance  
+    }
+   
       const pet = await ctx.prisma.pet.create({
         data: {
           userId,
@@ -67,7 +79,7 @@ export const petRouter = createTRPCRouter({
           isNeedGarden: garden === "true",
           isActive: active === "true",
           description,
-          petTorrelance,
+          petTorrelance: getTorrelance(),
           isNeutered: neutered === "true",
         },
       });
@@ -87,7 +99,6 @@ export const petRouter = createTRPCRouter({
           children: z.enum(['true', 'false'], {errorMap: ()=> {return {message: "Please select one of the options"}}}),
           garden: z.enum(['true', 'false'], {errorMap: ()=> {return {message: "Please select one of the options"}}}),
           active: z.enum(['true', 'false'], {errorMap: ()=> {return {message: "Please select one of the options"}}}),
-          petTorrelance: z.enum(["NONE", "CAT","DOG","BIRD", "ALL"], {errorMap: ()=> {return {message: "Please select one of the options"}}}),
           id: z.string()
       })
     )
@@ -103,7 +114,6 @@ export const petRouter = createTRPCRouter({
         garden,
         active,
         description,
-        petTorrelance,
         neutered,
       } = input;
       const pet = await ctx.prisma.pet.findUniqueOrThrow({
@@ -127,7 +137,6 @@ export const petRouter = createTRPCRouter({
             isNeedGarden: garden === "true",
             isActive: active === "true",
             description,
-            petTorrelance,
             isNeutered: neutered === "true",
           },
         });

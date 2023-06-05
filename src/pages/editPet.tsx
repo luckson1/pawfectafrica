@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { ErrorMessage } from "@hookform/error-message";
@@ -9,6 +9,7 @@ import LoadingButton from "~/components/loading/LoadingButton";
 import { useSession } from "next-auth/react";
 import { Toaster } from "react-hot-toast";
 import { useRouter, useSearchParams } from "next/navigation";
+import Select from "react-select/dist/declarations/src/Select";
 
 const PetSchema = z.object({
   name: z.string().min(1, { message: "Name Required" }),
@@ -49,11 +50,7 @@ const PetSchema = z.object({
       return { message: "Please select one of the options" };
     },
   }),
-  petTorrelance: z.enum(["NONE", "CAT", "DOG", "BIRD", "ALL"], {
-    errorMap: () => {
-      return { message: "Please select one of the options" };
-    },
-  }),
+  torrelance: z.array(z.object({value:z.enum(["NONE", "CAT","DOG","BIRD", "ALL"]), label:z.string() }), {errorMap: ()=> {return {message: "Please select one of the options"}}}).nonempty(),
 });
 
 export type PetValues = z.infer<typeof PetSchema>;
@@ -64,6 +61,7 @@ const PetOnboarding = () => {
 
   const {
     register,
+    control,
     handleSubmit,
     formState: { errors },
   } = useForm<PetValues>({
@@ -79,7 +77,7 @@ const PetOnboarding = () => {
       children: pet?.isChildrenSafe ? "true" : "false",
       garden: pet?.isNeedGarden ? "true" : "false",
       active: pet?.isActive ? "true" : "false",
-      petTorrelance: pet?.petTorrelance,
+  
     },
   });
   const { data } = useSession();
@@ -218,31 +216,7 @@ const PetOnboarding = () => {
               />
             </div>
 
-            <div className="form-control mt-5 w-full max-w-xs">
-              <label className="label">
-                <span className="label-text">
-                  Which animal does your pet dislike or threaten?
-                </span>
-              </label>
-              <select
-                className="select-bordered  select"
-                {...register("petTorrelance")}
-              >
-                <option value="">Select pet</option>
-                <option value="DOG">Dog</option>
-                <option value="CAT">Cat</option>
-                <option value="BIRD">bird</option>
-                <option value="ALL">All the above</option>
-                <option value="NONE">I currently dont own a pet</option>
-              </select>
-              <label className="label"></label>
-              <ErrorMessage
-                errors={errors}
-                name="petTorrelance"
-                as="h5"
-                className="text-red-600"
-              />
-            </div>
+           
             <div className="form-control mt-5 w-full max-w-xs">
               <label className="label">
                 <span className="label-text">

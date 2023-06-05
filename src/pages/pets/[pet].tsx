@@ -49,14 +49,14 @@ function PetId() {
   const { mutate: apply, isLoading: isApplicationLoading } =
     api.user.initiateAdoption.useMutation({
       onSuccess: () => toast.success("Application sent successfully"),
-      onSettled: ()=> ctx.pet.getOnePet.invalidate(),
+      onSettled: () => ctx.pet.getOnePet.invalidate(),
       onError: (data) => toast.error(`An Error Occured: ${data.message}`),
     });
   const { mutate: acceptApplication, isLoading: isAcceptanceLoading } =
     api.pet.acceptAdoptionApplication.useMutation({
       onSettled: () => ctx.pet.getOnePet.invalidate(),
     });
-    const { mutate: rejectApplication, isLoading: isRejectionLoading } =
+  const { mutate: rejectApplication, isLoading: isRejectionLoading } =
     api.pet.rejectAdoptionApplication.useMutation({
       onSettled: () => ctx.pet.getOnePet.invalidate(),
     });
@@ -203,7 +203,8 @@ function PetId() {
                     )}
                     {userApplicationsStatus === "PENDING" && (
                       <p className="text-center text-amber-500">
-                        Your adoption application Pending. Contact the owner on whatsapp to arrange a phone interview
+                        Your adoption application Pending. Contact the owner on
+                        whatsapp to arrange a phone interview
                       </p>
                     )}
                     {userApplicationsStatus === "ACCEPTED" && (
@@ -277,7 +278,9 @@ function PetId() {
                           width={100}
                           height={100}
                         />
-                        <p className="text-center text-blue-500 underline">{application.user.name}</p>
+                        <p className="text-center text-blue-500 underline">
+                          {application.user.name}
+                        </p>
                         {application.status === "ACCEPTED" && (
                           <p className="text-green-500">Accepted</p>
                         )}
@@ -287,32 +290,38 @@ function PetId() {
                         {application.status === "PENDING" && (
                           <div className="flex flex-row gap-2 ">
                             <button
-                              disabled={isAcceptanceLoading || isRejectionLoading}
+                              disabled={
+                                isAcceptanceLoading || isRejectionLoading
+                              }
                               className="btn-sm btn gap-2 bg-green-500 text-xs capitalize"
-                              onClick={(e) =>{
+                              onClick={(e) => {
                                 acceptApplication({
                                   id: application.id,
                                   status: "ACCEPTED",
                                   petId: pet.id,
-                                  userId: application.userId
-                                }); e.stopPropagation()}
-                              }
+                                  userId: application.userId,
+                                });
+                                e.stopPropagation();
+                              }}
                             >
                               {" "}
                               <IoMdCheckmarkCircleOutline className="h-4 w-4" />{" "}
                               Accept
                             </button>
                             <button
-                             disabled={isAcceptanceLoading || isRejectionLoading}
+                              disabled={
+                                isAcceptanceLoading || isRejectionLoading
+                              }
                               className="btn-sm btn gap-2 bg-red-500 text-xs capitalize"
-                              onClick={(e) =>{
+                              onClick={(e) => {
                                 rejectApplication({
                                   id: application.id,
                                   status: "REJECTED",
                                   petId: pet.id,
-                                  userId: application.userId
-                                }) ; e.stopPropagation() }
-                              }
+                                  userId: application.userId,
+                                });
+                                e.stopPropagation();
+                              }}
                             >
                               {" "}
                               <ImCancelCircle className="h-4 w-4" />
@@ -324,7 +333,14 @@ function PetId() {
                     ))}
                   </div>
                 )}
-                {isDonorView && <button className="btn btn-secondary w-full max-w-sm mx-auto my-5 " onClick={()=> router.push(`/editPet?id=${pet.id}`)}>Edit pet profile</button>}
+                {isDonorView && (
+                  <button
+                    className="btn-secondary btn mx-auto my-5 w-full max-w-sm "
+                    onClick={() => router.push(`/editPet?id=${pet.id}`)}
+                  >
+                    Edit pet profile
+                  </button>
+                )}
               </div>
             </div>
           </div>
@@ -405,7 +421,7 @@ function PetId() {
               <div className="mt-2 flex flex-row gap-5">
                 <p className="h2 text-lg font-bold">
                   {" "}
-                  Not social to pets, such as:{" "}
+                  Not socialised to pets, such as:{" "}
                 </p>
 
                 <p>
@@ -416,9 +432,15 @@ function PetId() {
                     ? "Cats"
                     : pet.petTorrelance === "DOG"
                     ? "Dogs"
+                    : pet.petTorrelance === "CAT_BIRD"
+                    ? "Cats and birds"
+                    : pet.petTorrelance === "DOG_BIRD"
+                    ? "Dogs and birds"
+                    : pet.petTorrelance === "DOG_CAT"
+                    ? "Dogs and cats"
                     : pet.petTorrelance === "NONE"
                     ? "Friendly to all Pets"
-                    : "Not friendly to other pets"}
+                    : "Not friendly to any other pets"}
                 </p>
               </div>
               <div className="mt-2 flex flex-row gap-5">

@@ -64,6 +64,9 @@ enum CurrentPet {
     DOG
     BIRD
     ALL
+    DOG_CAT
+    DOG_BIRD
+    CAT_BIRD
 }
 
 enum Role {
