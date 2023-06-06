@@ -390,7 +390,7 @@ const ll=watch('torrelance')
             </div>
             <div className="form-control w-full max-w-xs ">
               <label className="label">
-                <span className="label-text">Pet Description?</span>
+                <span className="label-text">Pet Character?</span>
               </label>
               <textarea
                 className="textarea-bordered  textarea h-28"
@@ -430,11 +430,11 @@ const ll=watch('torrelance')
             </div>
             <div className="form-control w-full max-w-xs ">
               <label className="label">
-                <span className="label-text">Pet Character?</span>
+                <span className="label-text">Pet Ideal Home?</span>
               </label>
               <textarea
                 className="textarea-bordered  textarea h-28"
-                placeholder="Pet idealHome"
+                placeholder="Pet ideal home"
                 id="idealHome"
                 {...register("idealHome")}
               ></textarea>

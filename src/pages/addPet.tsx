@@ -360,11 +360,11 @@ const images=watch("images")
             </div>
             <div className="form-control w-full max-w-xs ">
               <label className="label">
-                <span className="label-text">Pet Character?</span>
+                <span className="label-text">Pet ideal home?</span>
               </label>
               <textarea
                 className="textarea-bordered  textarea h-28"
-                placeholder="Pet idealHome"
+                placeholder="Pet ideal Home"
                 id="idealHome"
                 {...register("idealHome")}
               ></textarea>
