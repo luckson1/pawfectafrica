@@ -5,6 +5,10 @@ import { createTRPCContext } from "~/server/api/trpc";
 import { appRouter } from "~/server/api/root";
 
 // export API handler
+export const config = {
+  runtime: 'edge',
+};
+
 export default createNextApiHandler({
   router: appRouter,
   createContext: createTRPCContext,

@@ -4,7 +4,9 @@ import S3 from "aws-sdk/clients/s3";
 import { env } from "~/env.mjs";
 import { getServerAuthSession } from "~/server/auth";
 import { prisma } from "~/server/db";
-
+export const config = {
+  runtime: 'edge',
+};
 const s3 = new S3({
   apiVersion: "2006-03-01",
   accessKeyId: env.ACCESS_KEY,
