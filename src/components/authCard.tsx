@@ -21,7 +21,7 @@ export const LoginCard = () => {
     });
 
   return (
-    <div className="items-center   flex h-full w-full max-w-4xl max-h-[56rem] card  flex-col-reverse md:flex-row justify-center items center  rounded-2xl   shadow-2xl  ">
+    <div className="items-center   flex h-full w-full max-w-4xl max-h-[56rem] card  flex-col-reverse md:flex-row justify-center items center  rounded-2xl   shadow  ">
       <div className="h-2/5 md:h-full w-full md:w-1/2 bg-accent p-5 rounded-br-xl rounded-bl-xl md:rounded-br-none md:rounded-tl-xl" > <Image src="/adopt.svg" height={600} width={600} className="w-full h-full"  alt="adopt a pet"/> </div>
       <section className="  flex flex-col p-4 gap-2 justify-center items-center h-3/5 md:h-full w-full md:w-1/2 bg-base-100 rounded-tr-xl rounded-tl-xl md:rounded-tl-none md:rounded-br-xl">
    
@@ -29,9 +29,13 @@ export const LoginCard = () => {
      
 
         <div className="flex flex-col w-full justify-center items-center gap-2">
-       <div className="flex flex-col gap-2 w-full justify-center items-center">
-        <p>   Google</p>
-        <button
+      
+      
+       <div className="form-control w-full max-w-xs">
+          <label className="label">
+            <span className="label-text text-center">Google</span>
+          </label>
+          <button
           /* eslint-disable-next-line @typescript-eslint/no-misused-promises */ 
             onClick={handleLogin}
             className=" btn btn-primary btn-outline w-full max-w-xs gap-2 "
@@ -40,9 +44,7 @@ export const LoginCard = () => {
             <p className="tracking-[5px]">Google </p>
            
           </button>
-       </div>
-      
-          
+        </div>
        <p className="tracking-wider font-bold text-lg mt-3">Or</p> 
 
         <form className=" flex flex-col w-full justify-center items-center" 
