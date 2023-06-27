@@ -14,7 +14,7 @@ function Layout({ children }: { children: React.JSX.Element }) {
   const router=useRouter()
   const home = path === "/";
   const auth = path === "auth";
-  const terms=path==='t&c'
+  const terms=path==='terms'
   const publicRoutes=home || terms
   const dashboard = path === "/dashboard";
   const admin = role === "ADMIN";
