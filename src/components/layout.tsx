@@ -14,7 +14,7 @@ function Layout({ children }: { children: React.JSX.Element }) {
   const router=useRouter()
   const home = path === "/";
   const auth = path === "auth";
-  const terms=path==='terms'
+  const terms=path ==='terms'
   const dashboard = path === "/dashboard";
   const admin = role === "ADMIN";
   const newUser = role === "USER";
@@ -28,7 +28,7 @@ if(home) return (
   </div>
   </div>
 );
-
+if (terms) return <>{children}</>;
   if (status === "loading")
     return (
       <div className="h-screen w-screen flex justify-center items-center">
