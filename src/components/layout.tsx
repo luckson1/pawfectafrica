@@ -13,8 +13,8 @@ function Layout({ children }: { children: React.JSX.Element }) {
   const path = usePathname();
   const router=useRouter()
   const home = path === "/";
-  const auth = path === "auth";
-  const terms=path ==='terms'
+  const auth = path === "/auth";
+  const terms=path ==='/terms'
   const dashboard = path === "/dashboard";
   const admin = role === "ADMIN";
   const newUser = role === "USER";
@@ -28,7 +28,14 @@ if(home) return (
   </div>
   </div>
 );
-if (terms) return <>{children}</>;
+if(terms) return (
+  <div>
+    <Nav />
+  <div className="mt-16">
+  {children}
+  </div>
+  </div>
+);
   if (status === "loading")
     return (
       <div className="h-screen w-screen flex justify-center items-center">
@@ -41,7 +48,7 @@ if (terms) return <>{children}</>;
     </div>)
  
   if (auth) return <>{children}</>;
-  if (terms) return <>{children}</>;
+
 
 
   if (dashboard && !admin)
