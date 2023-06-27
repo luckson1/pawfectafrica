@@ -250,7 +250,7 @@ const Home: NextPage = () => {
                   <ul className="list-reset mb-6">
                     <li className="mr-2 mt-2 inline-block md:mr-0 md:block">
                       <Link
-                        href="/"
+                        href="/terms"
                         className="text-gray-900 no-underline hover:text-pink-500   hover:underline"
                       >
                         Terms
