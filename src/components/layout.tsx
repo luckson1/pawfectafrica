@@ -15,13 +15,12 @@ function Layout({ children }: { children: React.JSX.Element }) {
   const home = path === "/";
   const auth = path === "auth";
   const terms=path==='terms'
-  const publicRoutes=home || terms
   const dashboard = path === "/dashboard";
   const admin = role === "ADMIN";
   const newUser = role === "USER";
   
 
-if(publicRoutes) return (
+if(home) return (
   <div>
     <Nav />
   <div className="mt-16">
@@ -37,11 +36,12 @@ if(publicRoutes) return (
         <TableLoading />
       </div>
     );
-  if (status === "unauthenticated" && !publicRoutes && !auth) return   ( <div className='w-screen h-screen bg-base-100 flex justify-center items-center py-10'>
+  if (status === "unauthenticated" && !home && !auth) return   ( <div className='w-screen h-screen bg-base-100 flex justify-center items-center py-10'>
   <LoginCard />
     </div>)
  
   if (auth) return <>{children}</>;
+  if (terms) return <>{children}</>;
 
 
   if (dashboard && !admin)
@@ -55,7 +55,7 @@ if(publicRoutes) return (
       </div>
     );
  
-  if (!publicRoutes && newUser)
+  if (!home && newUser)
     return (
       <div>
         <Nav />
