@@ -55,7 +55,7 @@ if (terms) return <>{children}</>;
       </div>
     );
  
-  if (!home && newUser)
+  if ( newUser && (!home || !terms))
     return (
       <div>
         <Nav />
